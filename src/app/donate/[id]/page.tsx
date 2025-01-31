@@ -69,7 +69,7 @@ export default function Donate() {
       alert("Amount must be greater than 0.");
       return;
     }
-
+   // connect backend here for Razorpay
     try {
       const res = await fetch("/api/createOrder", {
         method: "POST",

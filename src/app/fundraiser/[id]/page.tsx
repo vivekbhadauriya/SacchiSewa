@@ -36,7 +36,8 @@ export default function FundraiserDetailsPage() {
     new Intl.NumberFormat('en-US').format(number);
 
   const handleDonate = () => {
-    alert(`Donate clicked for fundraiser: ${fundraiser.title} (ID: ${fundraiser.userID})`);
+   // alert(`Donate clicked for fundraiser: ${fundraiser.title} (ID: ${fundraiser.userID})`);
+   console.log(fundraiser.userID);
   };
 
   const images = [

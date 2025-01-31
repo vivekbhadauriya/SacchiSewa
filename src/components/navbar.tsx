@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
+import { Inter } from "next/font/google"; // Import Google Fonts in Next.js
+const inter = Inter({ subsets: ["latin"], weight: "700" });
 export function Navbar() {
   return (
     <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50 rounded-lg">
@@ -8,7 +9,7 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-black text-3xl font-extrabold hover:text-gray-700 transition-all"
+          className={`text-black text-4xl font-bold hover:text-gray-700 transition-all ${inter.className}`}
         >
           SacchiSewa
         </Link>

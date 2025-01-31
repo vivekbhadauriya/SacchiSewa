@@ -10,6 +10,7 @@ export interface Fundraiser {
     donors: number;
     document?: string[]; 
   }
+  // Fundraiser Api Call from backend
   export const fundraisersData: Fundraiser[] = [
     {
       userID: "1",
