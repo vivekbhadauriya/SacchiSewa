@@ -330,69 +330,49 @@ export default function FundraiserForm() {
     }
   }
 
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      // Handle fundraiser image upload
-      if (data.fundraiserImage instanceof FileList && data.fundraiserImage[0]) {
-        const imageFormData = new FormData()
-        imageFormData.append("file", data.fundraiserImage[0])
-        imageFormData.append("upload_preset", "fundraiser_images")
-        const imageRes = await fetch(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {
-            method: "POST",
-            body: imageFormData,
-          },
-        )
-        const imageData = await imageRes.json()
-        data.fundraiserImage = imageData.secure_url
-      } else if (typeof data.fundraiserImage === "string") {
-        //do nothing
+      
+      const formData = { ...data };
+
+      if (formData.fundraiserImage instanceof FileList && formData.fundraiserImage[0]) {
+        
+        formData.fundraiserImage = formData.fundraiserImage[0].name;
       }
 
-      // Handle multiple medical documents upload
-      if (data.medicalDocuments instanceof FileList && data.medicalDocuments.length > 0) {
-        const uploadPromises = Array.from(data.medicalDocuments).map((file) => {
-          const docFormData = new FormData()
-          docFormData.append("file", file)
-          docFormData.append("upload_preset", "medical_documents")
-          return fetch(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            {
-              method: "POST",
-              body: docFormData,
-            },
-          ).then((res) => res.json())
-        })
-
-        const uploadedDocs = await Promise.all(uploadPromises)
-        data.medicalDocuments = uploadedDocs.map((doc) => doc.secure_url)
-      } else if (Array.isArray(data.medicalDocuments)) {
-        //do nothing
+   
+      if (formData.medicalDocuments instanceof FileList) {
+      
+        formData.medicalDocuments = Array.from(formData.medicalDocuments).map(file => file.name);
       }
 
-      // Send all data to backend
+      
+      console.log('Final Form Data:', JSON.stringify(formData, null, 2));
+
+    // connect the backend api
       const response = await fetch("/api/create-fundraiser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
-      })
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to create fundraiser")
+        throw new Error("Failed to create fundraiser");
       }
 
-      // Handle success (e.g., redirect to success page)
-      console.log("Fundraiser created successfully")
-      // You can add a redirect here or show a success message
+      
+      console.log("Fundraiser created successfully");
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+
     } catch (error) {
-      console.error("Error:", error)
-      // Handle error (show error message to user)
-      setBackendError("An error occurred while creating the fundraiser")
+      console.error("Error:", error);
+      setBackendError("An error occurred while creating the fundraiser");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-green-200 p-2 sm:p-4 flex items-center justify-center backdrop-blur-sm">
