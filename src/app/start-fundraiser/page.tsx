@@ -40,7 +40,7 @@ function FormStep({ step }: { step: number }) {
   const {
     register,
     formState: { errors },
-    watch,
+    setValue,
   } = useFormContext<FormData>()
 
   const today = new Date().toISOString().split("T")[0]
@@ -61,7 +61,7 @@ function FormStep({ step }: { step: number }) {
           </div>
           <div className="transition-all duration-300 ease-in-out">
             <Label htmlFor="fundType">I am raising fund for</Label>
-            <Select onValueChange={(value) => register("fundType").onChange({ target: { value } })}>
+            <Select onValueChange={(value) => setValue("fundType", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select fund type" />
               </SelectTrigger>
@@ -84,7 +84,7 @@ function FormStep({ step }: { step: number }) {
           </div>
           <div className="transition-all duration-300 ease-in-out">
             <Label htmlFor="beneficiary">I am raising fund to help</Label>
-            <Select onValueChange={(value) => register("beneficiary").onChange({ target: { value } })}>
+            <Select onValueChange={(value) => setValue("beneficiary", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select beneficiary" />
               </SelectTrigger>
@@ -137,7 +137,7 @@ function FormStep({ step }: { step: number }) {
           </div>
           <div className="transition-all duration-300 ease-in-out">
             <Label htmlFor="category">Category</Label>
-            <Select onValueChange={(value) => register("category").onChange({ target: { value } })}>
+            <Select onValueChange={(value) => setValue("category", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
