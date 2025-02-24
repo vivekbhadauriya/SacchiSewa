@@ -1,5 +1,6 @@
 "use client"
-
+import { useToast } from "@/components/ui/use-toast"
+import { Toast } from '@/components/ui/toast'
 import { useState } from "react"
 import { useForm, type SubmitHandler, FormProvider, useFormContext } from "react-hook-form"
 import { Button } from "@/components/ui/button"
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
-
+import { useRouter } from "next/router";
 type FormData = {
   email: string
   password: string
@@ -358,12 +359,15 @@ export default function FundraiserForm() {
         },
         body: JSON.stringify(formData),
       });
-
+      
       if (!response.ok) {
         throw new Error("Failed to create fundraiser");
       }
-
-      
+      // Redirect to home page after 3 seconds
+      const router = useRouter(); 
+      setTimeout(() => {
+        router.push('/');
+      }, 3000);
       console.log("Fundraiser created successfully");
       const responseData = await response.json();
       console.log("Server response:", responseData);
@@ -439,4 +443,3 @@ export default function FundraiserForm() {
     </div>
   )
 }
-

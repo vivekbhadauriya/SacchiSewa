@@ -59,16 +59,18 @@ declare global {
 
 export default function Donate() {
   const { id } = useParams();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | ''>('');
+
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [panCard, setPanCard] = useState<string>("");
 
   const createOrder = async () => {
-    if (amount <= 0) {
+    if (amount === "" || Number(amount) < 0) {
       alert("Amount must be greater than 0.");
       return;
     }
+    
    // connect backend here for Razorpay
     try {
       const res = await fetch("/api/createOrder", {
@@ -115,7 +117,7 @@ export default function Donate() {
   };
 
   return (
-    <div className="flex w-screen items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+    <div className="flex w-screen items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-green-200">
       <Script
         id="razorpay-checkout"
         src="https://checkout.razorpay.com/v1/checkout.js"
@@ -147,9 +149,7 @@ export default function Donate() {
           type="number"
           className="w-full p-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={amount}
-          onChange={(e) =>
-            setAmount(e.target.valueAsNumber > 0 ? e.target.valueAsNumber : 0)
-          }
+          onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
           placeholder="Enter donation amount"
         />
         <button

@@ -1,12 +1,15 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function RegisterPage() {
+  const router = useRouter(); // Initialize router
   const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    password: '',
+    email: "",
+    name: "",
+    password: "",
   });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -14,11 +17,30 @@ export default function RegisterPage() {
       [name]: value,
     });
   };
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
-    // handle backend (connect backend for signup)
-    
+    console.log("Form Submitted:", formData);
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert("Registration successful!");
+        router.push("/start-fundraiser"); // Navigate to /start-fundraiser after successful registration
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong.");
+    }
   };
 
   return (
@@ -82,6 +104,4 @@ export default function RegisterPage() {
       </form>
     </div>
   );
-};
-
-
+}
