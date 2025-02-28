@@ -1,9 +1,9 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function RegisterPage() {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -20,26 +20,27 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
+    console.log("Sending to backend:", JSON.stringify(formData));
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Ensure correct structure
       });
 
+      const data = await response.json(); // Parse response
+      console.log("Response from backend:", data);
+
       if (response.ok) {
-        alert("Registration successful!");
-        router.push("/start-fundraiser"); // Navigate to /start-fundraiser after successful registration
+        router.push("/start-fundraiser");
       } else {
-        alert("Registration failed. Please try again.");
+        console.error("Signup failed:", data.error);
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong.");
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -105,3 +106,6 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+
+

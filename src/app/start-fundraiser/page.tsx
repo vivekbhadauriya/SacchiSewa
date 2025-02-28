@@ -1,6 +1,4 @@
 "use client"
-import { useToast } from "@/components/ui/use-toast"
-import { Toast } from '@/components/ui/toast'
 import { useState } from "react"
 import { useForm, type SubmitHandler, FormProvider, useFormContext } from "react-hook-form"
 import { Button } from "@/components/ui/button"
@@ -10,7 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
+
 type FormData = {
   email: string
   password: string
@@ -37,7 +37,9 @@ const steps = [
   { title: "Documents", icon: "3" },
 ]
 
+
 function FormStep({ step }: { step: number }) {
+ 
   const {
     register,
     formState: { errors },
@@ -237,6 +239,11 @@ function FormStep({ step }: { step: number }) {
 export default function FundraiserForm() {
   const [step, setStep] = useState(1)
   const [backendError, setBackendError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
+  
   const methods = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
@@ -261,39 +268,59 @@ export default function FundraiserForm() {
   })
 
   const { handleSubmit, trigger, getValues } = methods
- // Step 1 auth using Email and password
+  
+  // Step 1 auth using Email and password
   const validateFirstStep = async () => {
-    return true;
-    // const isValid = await trigger(["email", "password"])
-    // if (isValid) {
-    //   const { email, password } = getValues()
-    //   try {
-    //     const response = await fetch("/api/validate-user", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({ email, password }),
-    //     })
-    //     if (response.ok) {
-    //       setBackendError(null)
-    //       return true
-    //     } else {
-    //       const errorData = await response.json()
-    //       setBackendError(errorData.message || "Invalid email or password")
-    //       return false
-    //     }
-    //   } catch (error) {
-    //     console.error("Error validating user:", error)
-    //     setBackendError("An error occurred while validating user credentials")
-    //     return false
-    //   }
-    // }
-    // return false
+    console.log("inside first step");
+    const isValid = await trigger(["email", "password"])
+    if (isValid) {
+      const { email, password } = getValues()
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        })
+        if (response.ok) {
+          console.log("user is Authenticated")
+          setBackendError(null)
+          toast({
+            title: "Success",
+            description: "Login successful!",
+            variant: "default",
+          })
+          return true
+        } else {
+          const errorData = await response.json()
+          const errorMessage = errorData.message || "Invalid email or password"
+          setBackendError(errorMessage)
+          toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          })
+          return false
+        }
+      } catch (error) {
+        console.error("Error validating user:", error)
+        const errorMessage = "An error occurred while validating user credentials"
+        setBackendError(errorMessage)
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        return false
+      }
+    }
+    return false
   }
 
   const nextStep = async () => {
     if (step === 1) {
+      console.log("inside before step 1 call");
       const isValidFirstStep = await validateFirstStep()
       if (isValidFirstStep) {
         setStep(2)
@@ -331,50 +358,77 @@ export default function FundraiserForm() {
     }
   }
 
+  const handleRedirect = () => {
+    setIsRedirecting(true);
+    toast({
+      title: "Success",
+      description: "Fundraiser created successfully Our team will contact you soon! Redirecting to homepage...",
+      variant: "default",
+    });
+    setTimeout(() => {
+      router.push('/');
+    },0);
+  }
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
+      setIsSubmitting(true);
       
-      const formData = { ...data };
-
-      if (formData.fundraiserImage instanceof FileList && formData.fundraiserImage[0]) {
-        
-        formData.fundraiserImage = formData.fundraiserImage[0].name;
-      }
-
-   
-      if (formData.medicalDocuments instanceof FileList) {
-      
-        formData.medicalDocuments = Array.from(formData.medicalDocuments).map(file => file.name);
-      }
-
-      
-      console.log('Final Form Data:', JSON.stringify(formData, null, 2));
-
-    // connect the backend api
-      const response = await fetch("/api/create-fundraiser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      // Create a new FormData instance
+      const formData = new FormData();
+  
+      // Add all text fields
+      Object.keys(data).forEach(key => {
+        // Skip file fields as we'll handle them separately
+        if (key !== 'fundraiserImage' && key !== 'medicalDocuments') {
+          formData.append(key, data[key]);
+        }
       });
-      
-      if (!response.ok) {
-        throw new Error("Failed to create fundraiser");
+  
+      // Handle fundraiser image
+      if (data.fundraiserImage instanceof FileList && data.fundraiserImage[0]) {
+        formData.append('patientImage', data.fundraiserImage[0]); // Note: changed to match backend's expected field name
       }
-      // Redirect to home page after 3 seconds
-      const router = useRouter(); 
-      setTimeout(() => {
-        router.push('/');
-      }, 3000);
-      console.log("Fundraiser created successfully");
+  
+      // Handle medical documents
+      if (data.medicalDocuments instanceof FileList && data.medicalDocuments[0]) {
+        formData.append('medicalDocument', data.medicalDocuments[0]); // Note: changed to match backend's expected field name
+      }
+  
+      // Handle bank details if it's an object
+      if (typeof data.bankDetails === 'object') {
+        formData.append('bankDetails', JSON.stringify(data.bankDetails));
+      }
+  
+      console.log('Form data being sent:', Object.fromEntries(formData));
+  
+      const response = await fetch("/api/fundraiser", {
+        method: "POST",
+        // Don't set Content-Type header - browser will set it automatically
+        body: formData
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create fundraiser");
+      }
+      
       const responseData = await response.json();
       console.log("Server response:", responseData);
-
+      
+      console.log("Fundraiser created successfully");
+      handleRedirect();
     } catch (error) {
       console.error("Error:", error);
-      setBackendError("An error occurred while creating the fundraiser");
+      const errorMessage = "An error occurred while creating the fundraiser";
+      setBackendError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -406,38 +460,56 @@ export default function FundraiserForm() {
               ))}
             </div>
             <div className="mt-2 h-1 w-full bg-gray-200">
-              <div
-                className="h-1 bg-blue-500 transition-all duration-300 ease-in-out"
-                style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
-              ></div>
-            </div>
+  <div
+    className="h-1 bg-blue-500 transition-all duration-300 ease-in-out"
+    style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
+  ></div>
+</div>
+
           </div>
 
           {backendError && (
             <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">{backendError}</div>
           )}
 
-          <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-              <FormStep step={step} />
-              <div className="flex justify-between mt-6 space-x-2">
-                {step > 1 && (
-                  <Button type="button" variant="outline" onClick={prevStep} className="w-1/2 text-sm bg-cyan-100">
-                    Previous
-                  </Button>
-                )}
-                {step < 3 ? (
-                  <Button type="button" onClick={nextStep} className={`${step === 1 ? "w-full" : "w-1/2"} text-sm  bg-green-400`}>
-                    Next
-                  </Button>
-                ) : (
-                  <Button type="submit" className="w-full text-sm  bg-green-400">
-                    Submit
-                  </Button>
-                )}
-              </div>
-            </form>
-          </FormProvider>
+          {isRedirecting ? (
+            <div className="text-center p-6">
+              <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-green-700">Fundraiser Created Successfully!</h3>
+              <p className="mt-2 text-gray-600">Redirecting to homepage...</p>
+            </div>
+          ) : (
+            <FormProvider {...methods}>
+              <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" className="space-y-3">
+                <FormStep step={step} />
+                <div className="flex justify-between mt-6 space-x-2">
+                  {step > 1 && (
+                    <Button type="button" variant="outline" onClick={prevStep} className="w-1/2 text-sm bg-cyan-100" disabled={isSubmitting}>
+                      Previous
+                    </Button>
+                  )}
+                  {step < 3 ? (
+                    <Button 
+                      type="button" 
+                      onClick={nextStep} 
+                      className={`${step === 1 ? "w-full" : "w-1/2"} text-sm bg-green-400 `}
+                      disabled={isSubmitting}
+                    >
+                      Next
+                    </Button>
+                  ) : (
+                    <Button 
+                      type="submit" 
+                      className="w-full text-sm bg-green-400"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit"}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </FormProvider>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,9 +1,44 @@
 "use client";
-import { Heart, User, Timer } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Heart, User, Timer } from "lucide-react";
 import Link from "next/link";
 import { fundraisersData, Fundraiser } from "../data/fundraisersData";
 const formatNumber = (number: number) =>
   new Intl.NumberFormat("en-US").format(number);
+
+export default function FundraiserList() {
+  const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
+ 
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await fundraisersData(); // Wait for the API response
+        setFundraisers(data); // Store the resolved array in state
+      } catch (error) {
+        console.error("Error fetching fundraisers:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const handleDonate = (userID: string) => {
+    alert(`Donate clicked for fundraiser ID: ${userID}`);
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-8 py-8">
+      {fundraisers.map((fundraiser) => (
+        <FundraiserCard
+          key={fundraiser.userID}
+          fundraiser={fundraiser}
+          onDonate={handleDonate}
+        />
+      ))}
+    </div>
+  );
+}
 
 interface FundraiserCardProps {
   fundraiser: Fundraiser;
@@ -15,10 +50,19 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
     Math.round((fundraiser.raisedAmount / fundraiser.goalAmount) * 100),
     100
   );
+  const router = useRouter();
+
+  const handleDonateClick = () => {
+    router.push(`/donate/${fundraiser.userID}`);
+  };
+  const deadline = fundraiser.deadline
+    ? Math.max(0, Math.ceil((new Date(fundraiser.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
+
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 m-2 p-4 w-[360px]">
       <img
-        src={fundraiser.imageUrl}
+        src={fundraiser.patientImage}
         alt={`Image for ${fundraiser.title}`}
         className="w-full h-48 object-cover rounded-md"
       />
@@ -51,41 +95,23 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
 
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span className="flex items-center gap-1">
-              <Timer size={16} /> {fundraiser.daysLeft} days left
+              <Timer size={16} /> {deadline} days left
             </span>
             <span className="flex items-center gap-1">
               {fundraiser.donors} donors <User size={16} />
             </span>
           </div>
+
           <button
-            onClick={() => onDonate(fundraiser.userID)}
+            onClick={handleDonateClick}
             className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors"
             aria-label={`Donate to ${fundraiser.title}`}
           >
             <Heart size={18} />
-           
-            <Link href={`/donate/${fundraiser.userID}`} className="hover:underline">
             Donate Now
-          </Link>
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-export default function FundraiserList() {
-  const handleDonate = (userID: string) => {
-    alert(`Donate clicked for fundraiser ID: ${userID}`);
-  };
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-8 py-8">
-      {fundraisersData.map((fundraiser) => (
-        <FundraiserCard
-          key={fundraiser.userID}
-          fundraiser={fundraiser}
-          onDonate={handleDonate}
-        />
-      ))}
     </div>
   );
 }

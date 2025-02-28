@@ -1,18 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Heart, User, Timer, ChevronLeft, ChevronRight } from 'lucide-react';
-import { fundraisersData } from '../../data/fundraisersData';
+import { fundraisersData , Fundraiser } from '../../data/fundraisersData';
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link';
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function FundraiserDetailsPage() {
+  const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
+  
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const data = await fundraisersData(); // Wait for the API response
+          setFundraisers(data); // Store the resolved array in state
+        } catch (error) {
+          console.error("Error fetching fundraisers:", error);
+        }
+      }
+      fetchData();
+    }, []);
   const { id } = useParams();
-  const fundraiser = fundraisersData.find((f) => f.userID === id);
+  const fundraiser = fundraisers.find((f) => f.userID === id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!fundraiser) {
@@ -41,7 +55,8 @@ export default function FundraiserDetailsPage() {
   };
 
   const images = [
-    fundraiser.imageUrl,
+    fundraiser.
+    patientImage,
     'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
     'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
     'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
@@ -55,6 +70,9 @@ export default function FundraiserDetailsPage() {
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
+  const deadline = fundraiser.deadline
+    ? Math.max(0, Math.ceil((new Date(fundraiser.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -108,7 +126,8 @@ export default function FundraiserDetailsPage() {
                 <Progress value={percentageRaised} className="h-2" />
                 <div className="flex justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1">
-                    <Timer className="h-4 w-4" /> {fundraiser.daysLeft} days left
+                    <Timer className="h-4 w-4" /> {deadline
+                    } days left
                   </span>
                   <span className="flex items-center gap-1">
                     <User className="h-4 w-4" /> {fundraiser.donors} donors
