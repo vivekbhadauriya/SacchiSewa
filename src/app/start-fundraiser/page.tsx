@@ -28,7 +28,8 @@ type FormData = {
   }
   deadline: string
   fundraiserImage: FileList | string
-  medicalDocuments: FileList | string[]
+  medicalDocument: FileList | File[]
+  medicalDocuments: Record<string, File[]>;
 }
 
 const steps = [
@@ -37,7 +38,7 @@ const steps = [
   { title: "Documents", icon: "3" },
 ]
 
-
+const medicalDocsArr: File[] = []
 function FormStep({ step }: { step: number }) {
  
   const {
@@ -221,11 +222,17 @@ function FormStep({ step }: { step: number }) {
             <Input
               id="medicalDocuments"
               type="file"
-              accept=".jpg,.jpeg"
+              accept="image/*"
               multiple
-              {...register("medicalDocuments", { required: "At least one medical document is required" })}
+              onChange={(e) => {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                  setValue('medicalDocument', files);
+                }
+              }}
+              
             />
-            {errors.medicalDocuments && <p className="text-red-500 text-sm mt-1">{errors.medicalDocuments.message}</p>}
+            {errors.medicalDocument && <p className="text-red-500 text-sm mt-1">{errors.medicalDocument.message}</p>}
           </div>
           <p className="text-sm text-gray-500">
             You can upload multiple documents. Select all the files you want to upload at once.
@@ -263,7 +270,9 @@ export default function FundraiserForm() {
       },
       deadline: "",
       fundraiserImage: "",
-      medicalDocuments: [],
+      medicalDocument: [],
+      medicalDocuments: {},
+      
     },
   })
 
@@ -372,12 +381,30 @@ export default function FundraiserForm() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      setIsSubmitting(true);
-      
+      setIsSubmitting(true);    
       // Create a new FormData instance
       const formData = new FormData();
-  
-      // Add all text fields
+      let files = data.medicalDocument;
+      if (files instanceof FileList) {
+        Array.from(files).forEach((file) => {
+          medicalDocsArr.push(file);
+          console.log(file);
+        });
+      }
+      
+      console.log("medical docs:");
+      console.log(medicalDocsArr);
+      console.log("medical docs:", medicalDocsArr);
+
+// Append medical documents to FormData under `docs`
+medicalDocsArr.forEach((file, index) => {
+  formData.append(`medicalDocuments[${index}]`, file);
+});
+// Log final FormData entries for debugging
+// console.log("Final FormData:");
+// for (const pair of formData.entries()) {
+//   console.log(pair[0], pair[1]);
+// }
       Object.keys(data).forEach(key => {
         // Skip file fields as we'll handle them separately
         if (key !== 'fundraiserImage' && key !== 'medicalDocuments') {
@@ -390,22 +417,28 @@ export default function FundraiserForm() {
         formData.append('patientImage', data.fundraiserImage[0]); // Note: changed to match backend's expected field name
       }
   
-      // Handle medical documents
-      if (data.medicalDocuments instanceof FileList && data.medicalDocuments[0]) {
-        formData.append('medicalDocument', data.medicalDocuments[0]); // Note: changed to match backend's expected field name
-      }
-  
+     
+ files = data.medicalDocument;
+if (files instanceof FileList) {
+  Array.from(files).forEach((file) => {
+    formData.append('medicalDocument', file);
+    console.log(file);
+  });
+}
+
       // Handle bank details if it's an object
       if (typeof data.bankDetails === 'object') {
         formData.append('bankDetails', JSON.stringify(data.bankDetails));
       }
-  
+    
       console.log('Form data being sent:', Object.fromEntries(formData));
   
       const response = await fetch("/api/fundraiser", {
         method: "POST",
         // Don't set Content-Type header - browser will set it automatically
         body: formData
+
+        
       });
   
       if (!response.ok) {
@@ -467,7 +500,6 @@ export default function FundraiserForm() {
 </div>
 
           </div>
-
           {backendError && (
             <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">{backendError}</div>
           )}
