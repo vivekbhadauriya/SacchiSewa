@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState} from "react";
 import Script from "next/script";
 import { useParams } from "next/navigation";
+
 
 interface RazorpayOptions {
   key: string;
@@ -44,9 +45,7 @@ interface RazorpayInstance {
   open: () => void;
   on: <T extends "payment.failed">(
     event: T,
-    handler: T extends "payment.failed"
-      ? (response: RazorpayError) => void
-      : never
+    handler: T extends "payment.failed" ? (response: RazorpayError) => void : never
   ) => void;
   close: () => void;
 }
@@ -56,36 +55,38 @@ declare global {
     Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
   }
 }
-
 export default function Donate() {
   const { id } = useParams();
-  const [amount, setAmount] = useState<number | ''>('');
-
+  const [amount, setAmount] = useState<number | "">("");
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [panCard, setPanCard] = useState<string>("");
 
+  const fundraiserID=id;
   const createOrder = async () => {
-    if (amount === "" || Number(amount) < 0) {
+    if (amount === "" || Number(amount) <= 0) {
       alert("Amount must be greater than 0.");
       return;
     }
-    
-   // connect backend here for Razorpay
+
+    if (!fundraiserID) {
+      alert("Fundraiser not found for this user.");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/createOrder", {
+      const res = await fetch("/api/createdonation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount, id }),
+        body: JSON.stringify({ amount,  fundraiserID, name, email,pancardNumber: panCard }),
       });
 
       const data = await res.json();
-
       const paymentData: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-        amount: amount * 100,
+        amount: Number(amount) * 100,
         currency: "INR",
         order_id: data.id,
         name: "Donation",
@@ -111,6 +112,16 @@ export default function Donate() {
           console.error("Payment failed:", response);
         });
       }
+      // const verify = await fetch("/api/verifyDonation", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body:data,
+      // });
+      // if(!verify.ok){
+      //   console.log("payment not verified");
+      // }
     } catch (error) {
       console.error("Error during payment flow:", error);
     }
@@ -118,12 +129,11 @@ export default function Donate() {
 
   return (
     <div className="flex w-screen items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-green-200">
-      <Script
-        id="razorpay-checkout"
-        src="https://checkout.razorpay.com/v1/checkout.js"
-      />
+      <Script id="razorpay-checkout" src="https://checkout.razorpay.com/v1/checkout.js" />
       <div className="flex flex-col items-center gap-6 p-8 bg-white shadow-lg rounded-md border border-gray-300 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800">Donate to Support Fundraiser:{id}</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Donate to Support Fundraiser: {fundraiserID || "Loading..."}
+        </h1>
         <input
           type="text"
           className="w-full p-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -149,7 +159,7 @@ export default function Donate() {
           type="number"
           className="w-full p-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={amount}
-          onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
+          onChange={(e) => setAmount(e.target.value === "" ? "" : Number(e.target.value))}
           placeholder="Enter donation amount"
         />
         <button

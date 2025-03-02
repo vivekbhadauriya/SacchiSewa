@@ -1,5 +1,6 @@
 {
-  "/api/fundraiser/route": "app/api/fundraiser/route.js",
-  "/start-fundraiser/page": "app/start-fundraiser/page.js",
-  "/page": "app/page.js"
+  "/api/verifiedFundraiser/route": "app/api/verifiedFundraiser/route.js",
+  "/page": "app/page.js",
+  "/fundraisers/page": "app/fundraisers/page.js",
+  "/fundraiser/[id]/page": "app/fundraiser/[id]/page.js"
 }

@@ -10,15 +10,14 @@ import { Button } from "@/components/ui/button"
 import Link from 'next/link';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-
 export default function FundraiserDetailsPage() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
   
     useEffect(() => {
       async function fetchData() {
         try {
-          const data = await fundraisersData(); // Wait for the API response
-          setFundraisers(data); // Store the resolved array in state
+          const data = await fundraisersData();
+          setFundraisers(data); 
         } catch (error) {
           console.error("Error fetching fundraisers:", error);
         }
@@ -151,8 +150,9 @@ export default function FundraiserDetailsPage() {
   onClick={handleDonate}
   className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 >
+
   <Link
-    href={`/donate/${fundraiser.userID}`}
+   href={`/donate/${fundraiser.fundraiserID}`}
     className="flex items-center gap-2 hover:underline"
   >
     <Heart className="h-4 w-4" aria-hidden="true" />

@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import Fundraiser from "@/models/fundraiser";
 import Donation from "@/models/donations";
-import { verifyToken } from "@/utils/jwt";
-import { cookies } from "next/headers";
 import { connectToDB } from "@/utils/database"; // Import your DB connection utility
 
 const razorpay = new Razorpay({
@@ -24,30 +22,30 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
         }
 
-        const cookieStore = cookies();
-        const token = cookieStore.get("authToken");
+        // const cookieStore = cookies();
+        // const token = cookieStore.get("authToken");
 
-        console.log("Token is:", token);
+        // console.log("Token is:", token);
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized: Token not provided" },
-                { status: 401 }
-            );
-        }
+        // if (!token) {
+        //     return NextResponse.json(
+        //         { error: "Unauthorized: Token not provided" },
+        //         { status: 401 }
+        //     );
+        // }
 
-        let decoded;
-        try {
-            decoded = verifyToken(token.value); // No need for await if verifyToken is synchronous
-            console.log("Decoded token:", decoded);
-        } catch (err) {
-            return NextResponse.json(
-                { error: "Invalid or expired token" },
-                { status: 401 }
-            );
-        }
+        // let decoded;
+        // try {
+        //     decoded = verifyToken(token.value); // No need for await if verifyToken is synchronous
+        //     console.log("Decoded token:", decoded);
+        // } catch (err) {
+        //     return NextResponse.json(
+        //         { error: "Invalid or expired token" },
+        //         { status: 401 }
+        //     );
+        // }
 
-        const userID = decoded.id;
+        // const userID = decoded.id;
 
         const order = await razorpay.orders.create({
             amount: amount * 100, // Razorpay expects paise

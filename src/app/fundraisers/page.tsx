@@ -9,13 +9,11 @@ const formatNumber = (number: number) =>
 
 export default function FundraiserList() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
- 
-
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fundraisersData(); // Wait for the API response
-        setFundraisers(data); // Store the resolved array in state
+        const data = await fundraisersData(); 
+        setFundraisers(data); 
       } catch (error) {
         console.error("Error fetching fundraisers:", error);
       }
@@ -23,8 +21,8 @@ export default function FundraiserList() {
     fetchData();
   }, []);
 
-  const handleDonate = (userID: string) => {
-    alert(`Donate clicked for fundraiser ID: ${userID}`);
+  const handleDonate = () => {
+   // alert(`Donate clicked for fundraiser ID: ${userID}`);
   };
 
   return (
@@ -39,7 +37,6 @@ export default function FundraiserList() {
     </div>
   );
 }
-
 interface FundraiserCardProps {
   fundraiser: Fundraiser;
   onDonate: (id: string) => void;
@@ -51,14 +48,12 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
     100
   );
   const router = useRouter();
-
   const handleDonateClick = () => {
-    router.push(`/donate/${fundraiser.userID}`);
+    router.push(`/donate/${fundraiser.fundraiserID}`);
   };
   const deadline = fundraiser.deadline
     ? Math.max(0, Math.ceil((new Date(fundraiser.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
-
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 m-2 p-4 w-[360px]">
       <img

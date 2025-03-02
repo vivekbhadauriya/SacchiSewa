@@ -1,4 +1,4 @@
-import e from "express";
+import express from "express";
 import { NextResponse } from "next/server";
 
 export function authUser(request){

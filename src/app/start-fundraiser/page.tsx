@@ -384,7 +384,7 @@ export default function FundraiserForm() {
       setIsSubmitting(true);    
       // Create a new FormData instance
       const formData = new FormData();
-      let files = data.medicalDocument;
+      const files = data.medicalDocument;
       if (files instanceof FileList) {
         Array.from(files).forEach((file) => {
           medicalDocsArr.push(file);
@@ -401,11 +401,6 @@ export default function FundraiserForm() {
 medicalDocsArr.forEach((file, index) => {
   formData.append(`medicalDocuments[${index}]`, file);
 });
-// Log final FormData entries for debugging
-// console.log("Final FormData:");
-// for (const pair of formData.entries()) {
-//   console.log(pair[0], pair[1]);
-// }
       Object.keys(data).forEach(key => {
         // Skip file fields as we'll handle them separately
         if (key !== 'fundraiserImage' && key !== 'medicalDocuments') {
