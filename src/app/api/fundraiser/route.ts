@@ -1,3 +1,215 @@
+// import { connectToDB } from "@/utils/database";
+// import Fundraiser from "@/models/fundraiser";
+// import { verifyToken } from "@/utils/jwt";
+// import { v4 as uuidv4 } from "uuid";
+// import cloudinary from "@/utils/cloudinary";
+// import { NextResponse } from "next/server";
+// import { NextRequest } from "next/server";
+
+// // Upload a single file to Cloudinary
+// const uploadToCloudinary = async (file: File, folder: string): Promise<string | null> => {
+//   if (!file || !file.size) {
+//     console.log(`⚠️ Skipping upload: No valid file provided for ${folder}`);
+//     return null;
+//   }
+
+//   try {
+//     const arrayBuffer = await file.arrayBuffer();
+//     const buffer = Buffer.from(arrayBuffer);
+
+//     return new Promise<string | null>((resolve, reject) => {
+//       const uploadStream = cloudinary.uploader.upload_stream(
+//         { folder },
+//         (error, result) => {
+//           if (error) {
+//             console.error(`❌ Cloudinary Upload Error [${folder}]:`, error);
+//             reject(error);
+//           } else if (result?.secure_url) {
+//             console.log(`✅ Uploaded ${folder} URL:`, result.secure_url);
+//             resolve(result.secure_url);
+//           } else {
+//             reject(new Error(`Unknown Cloudinary upload failure for ${folder}`));
+//           }
+//         }
+//       );
+
+//       uploadStream.end(buffer);
+//     });
+//   } catch (error) {
+//     console.error(`❌ Error uploading file to Cloudinary [${folder}]:`, error);
+//     return null;
+//   }
+// };
+
+// // Upload multiple files to Cloudinary
+// const uploadMultipleToCloudinary = async (files: File[], folder: string): Promise<string[]> => {
+//   if (!files || files.length === 0) {
+//     console.log(`⚠️ No files provided for ${folder}, skipping upload.`);
+//     return [];
+//   }
+
+//   const uploadPromises = files
+//     .filter(file => file && file.size > 0)
+//     .map(file => uploadToCloudinary(file, folder));
+
+//   const results = await Promise.all(uploadPromises);
+//   return results.filter(url => url !== null) as string[];
+// };
+
+// export async function POST(req: NextRequest) {
+//   try {
+//     console.log("📌 Received POST request to create fundraiser");
+
+//     // Authenticate user
+//     const token = req.cookies.get("authToken")?.value;
+//     console.log("📌 Extracted Token:", token);
+
+//     if (!token) {
+//       console.error("❌ No authentication token found");
+//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//     }
+
+//     let decoded;
+//     try {
+//       decoded = verifyToken(token);
+//       console.log("📌 Decoded Token:", decoded);
+//     } catch (err) {
+//       console.error("❌ Invalid or expired token:", err);
+//       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
+//     }
+
+//     const userID = decoded.id;
+//     console.log("📌 Authenticated User ID:", userID);
+
+//     // Connect to database
+//     await connectToDB();
+//     console.log("📌 Connected to DB");
+
+//     // Parse form data
+//     const formData = await req.formData();
+//     console.log("📌 Received FormData:", formData);
+
+//     // Validate required fields
+//     const requiredFields = ["title", "email", "goalAmount", "phone", "category", "beneficiary", "deadline", "bankDetails"];
+//     for (const field of requiredFields) {
+//       if (!formData.get(field)) {
+//         console.error(`❌ Missing required field: ${field}`);
+//         return NextResponse.json({ error: `Field "${field}" is required` }, { status: 400 });
+//       }
+//     }
+
+//     // ✅ Parse bank details safely
+//     // ✅ Parse bank details safely
+// // ✅ Parse bank details safely
+// // Replace your current bank details parsing block with this
+// // For bankDetails, store it as a string in the database as expected by your schema
+// let bankDetails;
+// try {
+//   // Get all bank details entries
+//   const bankDetailsEntries = Array.from(formData.entries())
+//     .filter(([key]) => key === "bankDetails")
+//     .map(([_, value]) => value);
+  
+//   console.log("📌 Bank Details Entries:", bankDetailsEntries);
+  
+//   // Try each entry until we find valid JSON
+//   let parsedObj = null;
+  
+//   for (const entry of bankDetailsEntries) {
+//     try {
+//       if (typeof entry === "string") {
+//         // Skip entries that are clearly not valid JSON
+//         if (entry === "[object Object]" || entry === "[object FileList]") {
+//           continue;
+//         }
+        
+//         parsedObj = JSON.parse(entry);
+//         break;
+//       } else if (typeof entry === "object" && entry !== null) {
+//         parsedObj = entry;
+//         break;
+//       }
+//     } catch (parseError) {
+//       console.log(`Failed to parse entry: ${entry}`, parseError);
+//       // Continue to the next entry
+//     }
+//   }
+  
+//   if (!parsedObj) {
+//     throw new Error("No valid bank details format found");
+//   }
+  
+//   // Convert to string before saving to match the schema
+//   bankDetails = JSON.stringify(parsedObj);
+  
+//   console.log("✅ Parsed Bank Details:", bankDetails);
+// } catch (error) {
+//   console.error("❌ Error parsing bank details:", error);
+//   return NextResponse.json({ error: "Invalid bank details format" }, { status: 400 });
+// }
+//     // Check required files
+//     const patientImage = formData.get("patientImage") as File;
+//     if (!patientImage || !patientImage.size) {
+//       console.error("❌ Missing patient image");
+//       return NextResponse.json({ error: "Patient image is required" }, { status: 400 });
+//     }
+
+//     // Extract all keys related to medicalDocuments
+//     const medicalFiles: File[] = [];
+//     for (const [key, value] of formData.entries()) {
+//       if (key.startsWith("medicalDocuments")) {
+//         medicalFiles.push(value as File);
+//       }
+//     }
+
+//     console.log("📌 Extracted Medical Documents:", medicalFiles);
+
+//     console.log("📌 Medical Documents Found:", medicalFiles.length);
+
+//     // Upload patient image
+//     console.log("⏳ Uploading patient image...");
+//     const patientImageUrl = await uploadToCloudinary(patientImage, "patient_images");
+//     if (!patientImageUrl) {
+//       return NextResponse.json({ error: "Failed to upload patient image" }, { status: 500 });
+//     }
+
+//     // Upload medical documents
+//     console.log("⏳ Uploading medical documents...");
+//     const medicalDocumentsUrls = await uploadMultipleToCloudinary(medicalFiles, "medical_documents");
+
+//     // Create fundraiser document
+//     const newFundraiser = new Fundraiser({
+//       title: formData.get("title"),
+//       fundraiserID: uuidv4(),
+//       userID,
+//       email: formData.get("email"),
+//       goalAmount: parseFloat(formData.get("goalAmount") as string),
+//       mobileNumber: formData.get("phone"),
+//       patientImage: patientImageUrl,
+//       medicalDocuments: medicalDocumentsUrls,
+//       medicalDocument: medicalDocumentsUrls.length > 0 ? medicalDocumentsUrls[0] : "",
+//       bankDetails, // ✅ Now correctly parsed
+//       category: formData.get("category"),
+//       beneficiary: formData.get("beneficiary"),
+//       deadline: new Date(formData.get("deadline") as string),
+//     });
+
+//     console.log("📌 Saving Fundraiser to Database:", newFundraiser);
+//     await newFundraiser.save();
+//     console.log("✅ Fundraiser successfully saved!");
+
+//     return NextResponse.json(
+//       { message: "Fundraiser created successfully", fundraiserID: newFundraiser.fundraiserID },
+//       { status: 201 }
+//     );
+//   } catch (error) {
+//     console.error("❌ Error creating fundraiser:", error);
+//     return NextResponse.json(
+//       { error: "Failed to create fundraiser", details: error instanceof Error ? error.message : "Unknown error" },
+//       { status: 500 }
+//     );
+//   }
+// }
 import { connectToDB } from "@/utils/database";
 import Fundraiser from "@/models/fundraiser";
 import { verifyToken } from "@/utils/jwt";
@@ -5,67 +217,70 @@ import { v4 as uuidv4 } from "uuid";
 import cloudinary from "@/utils/cloudinary";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { useRouter } from "next/navigation";
-
-// Define types for request body
-interface FundraiserData {
-  title: string;
-  description: string;
-  goalAmount: string;
-  patientName: string;
-  category: string;
-  beneficiary: string;
-  deadline: string;
-  bankDetails: string;
-  patientImage: File | null;
-  medicalDocument: File | null;
-}
-
-
-// Cloudinary Upload Function
-const uploadToCloudinary = async (file: File | null, folder: string): Promise<string> => {
-  if (!file) {
-    throw new Error(`${folder} file is required`);
+import mongoose from "mongoose";
+// Upload a single file to Cloudinary
+const uploadToCloudinary = async (file: File, folder: string): Promise<string | null> => {
+  if (!file || !file.size) {
+    console.log(`⚠️ Skipping upload: No valid file provided for ${folder}`);
+    return null;
   }
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      { folder },
-      (error, result) => {
-        if (error) {
-          console.error("Cloudinary Upload Error:", error);
-          reject(new Error(`Cloudinary upload failed: ${error.message}`));
-        } else if (result) {
-          resolve(result.secure_url);
-        } else {
-          reject(new Error("Unknown Cloudinary upload failure"));
+    return new Promise<string | null>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder },
+        (error, result) => {
+          if (error) {
+            console.error(`❌ Cloudinary Upload Error [${folder}]:`, error);
+            reject(error);
+          } else if (result?.secure_url) {
+            console.log(`✅ Uploaded ${folder} URL:`, result.secure_url);
+            resolve(result.secure_url);
+          } else {
+            reject(new Error(`Unknown Cloudinary upload failure for ${folder}`));
+          }
         }
-      }
-    );
+      );
 
-    uploadStream.end(buffer);
-  });
+      uploadStream.end(buffer);
+    });
+  } catch (error) {
+    console.error(`❌ Error uploading file to Cloudinary [${folder}]:`, error);
+    return null;
+  }
 };
 
-// 🟢 **POST - Create a New Fundraiser**
+// Upload multiple files to Cloudinary
+const uploadMultipleToCloudinary = async (files: File[], folder: string): Promise<string[]> => {
+  if (!files || files.length === 0) {
+    console.log(`⚠️ No files provided for ${folder}, skipping upload.`);
+    return [];
+  }
+
+  const uploadPromises = files
+    .filter(file => file && file.size > 0)
+    .map(file => uploadToCloudinary(file, folder));
+
+  const results = await Promise.all(uploadPromises);
+  return results.filter(url => url !== null) as string[];
+};
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("📌 Incoming POST request to create fundraiser");
+    console.log("📌 Received POST request to create fundraiser");
 
-    // Extract Token
+    // Authenticate user
     const token = req.cookies.get("authToken")?.value;
     console.log("📌 Extracted Token:", token);
 
     if (!token) {
       console.error("❌ No authentication token found");
-      return NextResponse.json({ error: "Unauthorized: Token not provided" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify Token
     let decoded;
     try {
       decoded = verifyToken(token);
@@ -75,161 +290,142 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
     }
 
-    const userID = decoded.id;
-    console.log("📌 Authenticated User ID:", userID);
+    const userID = decoded.id; // Get from JWT token
 
-    // Connect to DB
+// // Validate & convert userID
+// if (!mongoose.Types.ObjectId.isValid(userID)) {
+//   console.error("❌ Invalid ObjectId format:", userID);
+//   return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+// }
+
+// userID = new mongoose.Types.ObjectId(userID);
     await connectToDB();
     console.log("📌 Connected to DB");
 
-    // Parse FormData
+    // Parse form data
     const formData = await req.formData();
     console.log("📌 Received FormData:", formData);
 
-    // Extract and validate form fields
-    const fundraiserData: FundraiserData = {
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      goalAmount: formData.get("goalAmount") as string,
-      patientName: formData.get("patientName") as string,
-      category: formData.get("category") as string,
-      beneficiary: formData.get("beneficiary") as string,
-      deadline: formData.get("deadline") as string,
-      bankDetails: formData.get("bankDetails") as string,
-      patientImage: formData.get("patientImage") as File | null,
-      medicalDocument: formData.get("medicalDocument") as File | null,
-    };
-
-    console.log("📌 Parsed FormData:", fundraiserData);
-    // Check required fields
-    const requiredFields: (keyof FundraiserData)[] = [
-      "title",
-      "goalAmount",
-      "category",
-      "beneficiary",
-      "deadline",
-      "bankDetails",
-    ];
-
+    // Validate required fields
+    const requiredFields = ["title", "email", "goalAmount", "phone", "category", "beneficiary", "deadline", "bankDetails"];
     for (const field of requiredFields) {
-      if (!fundraiserData[field]) {
+      if (!formData.get(field)) {
         console.error(`❌ Missing required field: ${field}`);
         return NextResponse.json({ error: `Field "${field}" is required` }, { status: 400 });
       }
     }
 
-    console.log("📌 All required fields are present");
+    // Parse bank details safely
+    const bankDetailsArray = formData.getAll("bankDetails");
 
-    // Upload Images to Cloudinary
-    const [patientImageUrl, medicalDocumentUrl] = await Promise.all([
-      uploadToCloudinary(fundraiserData.patientImage, "patient_images"),
-      uploadToCloudinary(fundraiserData.medicalDocument, "medical_documents"),
-    ]);
+console.log("📌 Raw bankDetails from FormData:", bankDetailsArray);
 
-    console.log("📌 Image Upload Successful:", { patientImageUrl, medicalDocumentUrl });
+let bankDetails;
+try {
+  // Get all bank details entries
+  const bankDetailsEntries = Array.from(formData.entries())
+    .filter(([key]) => key === "bankDetails")
+    .map(([_, value]) => value);
+  
+  console.log("📌 Bank Details Entries:", bankDetailsEntries);
+  
+  // Try each entry until we find valid JSON
+  let parsedObj = null;
+  
+  for (const entry of bankDetailsEntries) {
+    try {
+      if (typeof entry === "string") {
+        // Skip entries that are clearly not valid JSON
+        if (entry === "[object Object]" || entry === "[object FileList]") {
+          continue;
+        }
+        
+        parsedObj = JSON.parse(entry);
+        break;
+      } else if (typeof entry === "object" && entry !== null) {
+        parsedObj = entry;
+        break;
+      }
+    } catch (parseError) {
+      console.log(`Failed to parse entry: ${entry}`, parseError);
+      // Continue to the next entry
+    }
+  }
+  
+  if (!parsedObj) {
+    throw new Error("No valid bank details format found");
+  }
+  
+  // Use the object directly
+  bankDetails = parsedObj;
+  
+  // Validate that required fields exist
+  if (!bankDetails.accountNumber || !bankDetails.ifscCode || !bankDetails.branchAddress) {
+    throw new Error("Missing required bank details fields");
+  }
+  
+  console.log("✅ Parsed Bank Details:", bankDetails);
+} catch (error) {
+  console.error("❌ Error parsing bank details:", error);
+  return NextResponse.json({ error: "Invalid bank details format" }, { status: 400 });
+}
 
-    // Create Fundraiser
-    const fundraiserID = uuidv4();
 
+
+    // Check required files
+    const patientImage = formData.get("patientImage") as File;
+    if (!patientImage || !patientImage.size) {
+      console.error("❌ Missing patient image");
+      return NextResponse.json({ error: "Patient image is required" }, { status: 400 });
+    }
+
+    // Extract all keys related to medicalDocuments
+const medicalFiles: File[] = [];
+for (const [key, value] of formData.entries()) {
+  if (key.startsWith("medicalDocuments")) {
+    medicalFiles.push(value as File);
+  }
+}
+
+console.log("📌 Extracted Medical Documents:", medicalFiles);
+
+    console.log("📌 Medical Documents Found:", medicalFiles.length);
+
+    // Upload patient image
+    console.log("⏳ Uploading patient image...");
+    const patientImageUrl = await uploadToCloudinary(patientImage, "patient_images");
+    if (!patientImageUrl) {
+      return NextResponse.json({ error: "Failed to upload patient image" }, { status: 500 });
+    }
+
+    // Upload medical documents
+    console.log("⏳ Uploading medical documents...");
+    const medicalDocumentsUrls = await uploadMultipleToCloudinary(medicalFiles, "medical_documents");
+
+    // Create fundraiser document
     const newFundraiser = new Fundraiser({
-      title: fundraiserData.title,
-      goalAmount: parseFloat(fundraiserData.goalAmount),
-      patientImage: patientImageUrl,
-      patientName: fundraiserData.patientName,
-      medicalDocument: medicalDocumentUrl,
-      bankDetails: fundraiserData.bankDetails,
-      fundraiserID,
-      category: fundraiserData.category,
+      title: formData.get("title"),
+      fundraiserID: uuidv4(),
       userID,
-      beneficiary: fundraiserData.beneficiary,
-      deadline: new Date(fundraiserData.deadline),
+       email: formData.get("email"),
+      goalAmount: parseFloat(formData.get("goalAmount") as string),
+      mobileNumber: formData.get("phone"),
+      patientImage: patientImageUrl,
+      medicalDocuments: medicalDocumentsUrls,
+      bankDetails,
+      category: formData.get("category"),
+      beneficiary: formData.get("beneficiary"),
+      deadline: new Date(formData.get("deadline") as string),
     });
 
-    console.log("📌 Fundraiser Object Created:", newFundraiser);
-
-    // Save to DB
+    console.log("📌 Saving Fundraiser to Database:", newFundraiser);
     await newFundraiser.save();
-    console.log("✅ Fundraiser successfully saved to DB");
-  
+    console.log("✅ Fundraiser successfully saved!");
 
+    return NextResponse.json({ message: "Fundraiser created successfully", fundraiserID: newFundraiser.fundraiserID }, { status: 201 });
 
-    return NextResponse.json({ message: "Fundraiser created successfully" }, { status: 201 });
   } catch (error) {
     console.error("❌ Error creating fundraiser:", error);
-    return NextResponse.json(
-      { error: "Failed to create fundraiser", details: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create fundraiser", details: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }
-
-
-// 🟢 **GET - Fetch All Fundraisers**
-export async function GET() {
-  try {
-    await connectToDB();
-
-    const fundraisers = await Fundraiser.find({});
-    return NextResponse.json(fundraisers, { status: 200 });
-  } catch (error) {
-    console.error("Error retrieving fundraisers:", error);
-    return NextResponse.json(
-      { error: "Failed to retrieve fundraisers", details: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    );
-  }
-}
-
-// 🟢 **DELETE - Remove a Fundraiser**
-export async function DELETE(req: NextRequest) {
-  try {
-    const token = req.cookies.get("authToken")?.value;
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized: Token not provided" }, { status: 401 });
-    }
-
-    let decoded;
-    try {
-      decoded = verifyToken(token);
-    } catch (err) {
-      return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
-    }
-
-    const userID = decoded.id;
-    const url = new URL(req.url);
-    const fundraiserID = url.searchParams.get("fundraiserID");
-
-    if (!fundraiserID) {
-      return NextResponse.json({ error: "Fundraiser ID is required" }, { status: 400 });
-    }
-
-    await connectToDB();
-
-    // Fetch fundraiser
-    const fundraiser = await Fundraiser.findOne({ fundraiserID });
-
-    if (!fundraiser) {
-      return NextResponse.json({ error: "Fundraiser not found" }, { status: 404 });
-    }
-
-    if (fundraiser.userID !== userID) {
-      return NextResponse.json({ error: "Unauthorized: You cannot delete this fundraiser" }, { status: 403 });
-    }
-
-    // Delete fundraiser from DB
-    await Fundraiser.deleteOne({ fundraiserID });
-
-    return NextResponse.json({ message: "Fundraiser deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Error deleting fundraiser:", error);
-    return NextResponse.json(
-      { error: "Failed to delete fundraiser", details: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    );
-  }
-}
-
-
-
-
-

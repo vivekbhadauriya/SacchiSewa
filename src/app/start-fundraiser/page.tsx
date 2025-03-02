@@ -397,6 +397,7 @@ export default function FundraiserForm() {
       console.log("medical docs:", medicalDocsArr);
 
 // Append medical documents to FormData under `docs`
+
 medicalDocsArr.forEach((file, index) => {
   formData.append(`medicalDocuments[${index}]`, file);
 });
@@ -418,13 +419,24 @@ medicalDocsArr.forEach((file, index) => {
       }
   
      
- files = data.medicalDocument;
-if (files instanceof FileList) {
+// ✅ Ensure 'files' is an actual FileList
+const medicalFiles = data.medicalDocument; 
+
+if (medicalFiles instanceof FileList) {
+  const formData = new FormData();
+  const uniqueFiles = new Map(); // ✅ Prevent duplicate files
+
   Array.from(files).forEach((file) => {
-    formData.append('medicalDocument', file);
-    console.log(file);
+    if (file instanceof File && !uniqueFiles.has(file.name)) {
+      uniqueFiles.set(file.name, file);
+      formData.append("medicalDocuments", file); // ✅ Use the correct field name
+    }
   });
+
+  console.log("📌 Appended Medical Documents:", [...formData.getAll("medicalDocuments")]);
 }
+
+
 
       // Handle bank details if it's an object
       if (typeof data.bankDetails === 'object') {

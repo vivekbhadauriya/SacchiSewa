@@ -4,6 +4,7 @@ import Fundraiser from "@/models/fundraiser";
 import Donation from "@/models/donations";
 import { verifyToken } from "@/utils/jwt";
 import { cookies } from "next/headers";
+import { connectToDB } from "@/utils/database"; // Import your DB connection utility
 
 const razorpay = new Razorpay({
     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
@@ -12,6 +13,10 @@ const razorpay = new Razorpay({
 
 export async function POST(req: Request) {
     try {
+        // Connect to the database first
+        await connectToDB();
+        console.log("Connected to database");
+
         const body = await req.json();
         const { amount, fundraiserID } = body;
 
@@ -19,8 +24,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
         }
 
-        const cookieStore =  await cookies();
-        const token = cookieStore.get("authToken"); // Removed `await`
+        const cookieStore = cookies();
+        const token = cookieStore.get("authToken");
 
         console.log("Token is:", token);
 
@@ -33,7 +38,7 @@ export async function POST(req: Request) {
 
         let decoded;
         try {
-            decoded = await verifyToken(token.value); // Ensure `await`
+            decoded = verifyToken(token.value); // No need for await if verifyToken is synchronous
             console.log("Decoded token:", decoded);
         } catch (err) {
             return NextResponse.json(
@@ -49,7 +54,8 @@ export async function POST(req: Request) {
             currency: "INR",
         });
 
-        const fundraiser = await Fundraiser.findById(fundraiserID);
+        // Use findOne with query object instead of findById
+        const fundraiser = await Fundraiser.findOne({ _id: fundraiserID });
         if (!fundraiser) {
             return NextResponse.json(
                 { error: "Fundraiser not found" },
@@ -72,7 +78,7 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error("Error creating Razorpay order:", error);
         return NextResponse.json(
-            { error: "Failed to create order" },
+            { error: "Failed to create order", details: error instanceof Error ? error.message : "Unknown error" },
             { status: 500 }
         );
     }

@@ -11,30 +11,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/signup/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/signup/page.js"
-    ],
-    "/api/signup/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/signup/route.js"
-    ],
     "/start-fundraiser/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/start-fundraiser/page.js"
     ],
-    "/fundraisers/page": [
+    "/api/login/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/fundraisers/page.js"
+      "static/chunks/app/api/login/route.js"
     ],
-    "/api/verifiedFundraiser/route": [
+    "/api/fundraiser/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/verifiedFundraiser/route.js"
+      "static/chunks/app/api/fundraiser/route.js"
     ]
   }
 }
