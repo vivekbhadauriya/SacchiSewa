@@ -11,6 +11,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
+    "/donate/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/donate/[id]/page.js"
+    ],
     "/fundraisers/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -21,10 +26,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/verifiedFundraiser/route.js"
     ],
-    "/fundraiser/[id]/page": [
+    "/api/createdonation/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/fundraiser/[id]/page.js"
+      "static/chunks/app/api/createdonation/route.js"
     ]
   }
 }
