@@ -1,7 +1,6 @@
 {
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/api/verifiedFundraiser/route": "app/api/verifiedFundraiser/route.js",
-  "/api/createdonation/route": "app/api/createdonation/route.js",
   "/page": "app/page.js",
-  "/donate/[id]/page": "app/donate/[id]/page.js",
   "/fundraisers/page": "app/fundraisers/page.js"
 }

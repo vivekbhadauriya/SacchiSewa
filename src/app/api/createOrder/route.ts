@@ -67,7 +67,6 @@ export async function POST(req: Request) {
         const donation = new Donation({
             donationID: order.id,
             fundraiserID: fundraiserID,
-            userID: userID,
             amount: amount,
         });
         await donation.save();

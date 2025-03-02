@@ -1,18 +1,17 @@
 import mongoose from "mongoose";
 
-const DonationSchema = new mongoose.Schema(
-  {
-    donationID: { type: String, required: true, unique: true }, // Razorpay Order ID
-    fundraiserID: { type: String, required: true }, // References VerifiedCamp fundraiserID
-    amount: { type: Number, required: true },
-    paymentStatus: { type: String, enum: ["pending", "success", "failed"], default: "pending" },
-    razorpay_payment_id: { type: String }, // Updated after successful payment
-    name: { type: String, required: true }, // Donor's name
-    email: { type: String, required: true }, // Donor's email
-    pancardNumber: { type: String, default: "" }, // PAN card is optional (default empty string)
-  },
-  { timestamps: true }
-);
+const DonationSchema = new mongoose.Schema({
+  donationID: { type: String, required: true, unique: true },
+  amount: { type: Number, required: true },
+  paymentStatus: { type: String, default: "pending" },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  pancardNumber: { type: String },
+  fundraiserID: { type: String, required: true },
+  razorpay_payment_id: { type: String },
+  createdAt: { type: Date, default: Date.now }, // Already exists
+  updatedAt: { type: Date, default: Date.now }, // Already exists
+  donationTimestamp: { type: Date, default: Date.now } // 🔥 New field for exact donation time
+}, { timestamps: true });
 
-const Donation = mongoose.models.Donation || mongoose.model("Donation", DonationSchema);
-export default Donation;
+export default mongoose.models.Donation || mongoose.model("Donation", DonationSchema);

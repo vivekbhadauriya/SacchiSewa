@@ -68,64 +68,74 @@ export default function Donate() {
       alert("Amount must be greater than 0.");
       return;
     }
-
+  
     if (!fundraiserID) {
       alert("Fundraiser not found for this user.");
       return;
     }
-
+  
     try {
+      // Create Order
       const res = await fetch("/api/createdonation", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount,  fundraiserID, name, email,pancardNumber: panCard }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, fundraiserID, name, email, pancardNumber: panCard }),
       });
-
+  
       const data = await res.json();
+      console.log("Order Created:", data);
+  
+      if (!data.order || !data.order.id) {
+        console.error("Invalid order response:", data);
+        return;
+      }
+  
+      // Razorpay Payment Options
       const paymentData: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
         amount: Number(amount) * 100,
         currency: "INR",
-        order_id: data.id,
+        order_id: data.order.id, // ✅ Fixed Order ID
         name: "Donation",
         description: "Support our cause",
-        handler: function (response: RazorpayResponse) {
+        handler: async function (response: RazorpayResponse) {
           console.log("Payment successful:", response);
+  
+          // ✅ Verify Payment Only After Successful Razorpay Callback
+          const verify = await fetch("/api/verifyDonation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response), // ✅ Send correct verification data
+          });
+  
+          const verifyResult = await verify.json();
+          if(verifyResult.success){
+            console.log("Verification Result:", verifyResult);
+            
+          }
+          
         },
         prefill: {
           name,
           email,
-          contact: panCard || "",
+          contact: "", // Add required contact field
         },
-        theme: {
-          color: "#3399cc",
-        },
+        theme: { color: "#3399cc" },
       };
-
+  
       if (typeof window !== "undefined") {
         const payment = new window.Razorpay(paymentData);
         payment.open();
-
+  
         payment.on("payment.failed", function (response: RazorpayError) {
           console.error("Payment failed:", response);
         });
       }
-      // const verify = await fetch("/api/verifyDonation", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body:data,
-      // });
-      // if(!verify.ok){
-      //   console.log("payment not verified");
-      // }
     } catch (error) {
       console.error("Error during payment flow:", error);
     }
   };
+  
 
   return (
     <div className="flex w-screen items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-green-200">

@@ -3,9 +3,12 @@ import { connectToDB } from "@/utils/database";
 import Donation from "@/models/donations";
 
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+console.log("RAZORPAY_KEY_ID:", process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
+
 
 export async function POST(req) {
   try {
@@ -34,6 +37,7 @@ export async function POST(req) {
     const donation = new Donation({
       donationID: order.id,
       fundraiserID,
+      donationTimestamp: new Date(),
       amount,
       name,
       email,

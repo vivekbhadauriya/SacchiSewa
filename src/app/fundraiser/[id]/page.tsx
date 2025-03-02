@@ -8,11 +8,11 @@ import { fundraisersData , Fundraiser } from '../../data/fundraisersData';
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link';
-
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 export default function FundraiserDetailsPage() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
-  
+  const router = useRouter();
     useEffect(() => {
       async function fetchData() {
         try {
@@ -27,7 +27,7 @@ export default function FundraiserDetailsPage() {
   const { id } = useParams();
   const fundraiser = fundraisers.find((f) => f.userID === id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+ 
   if (!fundraiser) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -47,9 +47,10 @@ export default function FundraiserDetailsPage() {
 
   const formatNumber = (number: number) =>
     new Intl.NumberFormat('en-US').format(number);
-
+   
   const handleDonate = () => {
    // alert(`Donate clicked for fundraiser: ${fundraiser.title} (ID: ${fundraiser.userID})`);
+   router.push(`/donate/${fundraiser.fundraiserID}`);
    console.log(fundraiser.userID);
   };
 
@@ -150,14 +151,9 @@ export default function FundraiserDetailsPage() {
   onClick={handleDonate}
   className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 >
-
-  <Link
-   href={`/donate/${fundraiser.fundraiserID}`}
-    className="flex items-center gap-2 hover:underline"
-  >
     <Heart className="h-4 w-4" aria-hidden="true" />
     <span>Donate Now</span>
-  </Link>
+
 </Button>
 
         </CardFooter>
