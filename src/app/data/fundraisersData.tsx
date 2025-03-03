@@ -17,13 +17,16 @@ export const fundraisersData = async (): Promise<Fundraiser[]> => {
   try {
     console.log("Fetching Fundraiser data...");
 
-        const response = await fetch("/api/verifiedFundraiser", {
+    const response = await fetch(`/api/verifiedFundraiser?timestamp=${new Date().getTime()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
       },
     });
-
+    
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

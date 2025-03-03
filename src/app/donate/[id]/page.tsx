@@ -3,7 +3,7 @@
 import { useState} from "react";
 import Script from "next/script";
 import { useParams } from "next/navigation";
-
+import { useRouter } from "next/navigation";
 
 interface RazorpayOptions {
   key: string;
@@ -61,7 +61,7 @@ export default function Donate() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [panCard, setPanCard] = useState<string>("");
-
+  const router=useRouter();
   const fundraiserID=id;
   const createOrder = async () => {
     if (amount === "" || Number(amount) <= 0) {
@@ -111,6 +111,7 @@ export default function Donate() {
           const verifyResult = await verify.json();
           if(verifyResult.success){
             console.log("Verification Result:", verifyResult);
+            router.push('/')
             
           }
           
