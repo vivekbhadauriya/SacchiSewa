@@ -1,10 +1,14 @@
 module.exports = {
     extends: 'next/core-web-vitals',
     rules: {
-      // Temporarily disable rules causing build failures
-      "@typescript-eslint/no-unused-vars": "warn", // Downgrade from error to warning
-      "react/no-unescaped-entities": "warn", // Downgrade from error to warning
-      "@typescript-eslint/no-empty-object-type": "warn", // Downgrade from error to warning
-      "@next/next/no-img-element": "warn" // Keep as warning
+      // Set strict enforcement but with specific exceptions if needed
+      "@typescript-eslint/no-unused-vars": ["error", { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
+      "react/no-unescaped-entities": "error",
+      "@typescript-eslint/no-empty-object-type": "error",
+      "@next/next/no-img-element": "warn" // Keep as warning since it doesn't break builds
     }
   }
