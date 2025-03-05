@@ -1,18 +1,18 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/api/createOrder/route": "app/api/createOrder/route.js",
-  "/api/createdonation/route": "app/api/createdonation/route.js",
-  "/api/fundraiser/route": "app/api/fundraiser/route.js",
   "/api/login/route": "app/api/login/route.js",
+  "/api/fundraiser/route": "app/api/fundraiser/route.js",
+  "/api/createdonation/route": "app/api/createdonation/route.js",
   "/api/signup/route": "app/api/signup/route.js",
-  "/api/verifiedFundraiser/route": "app/api/verifiedFundraiser/route.js",
   "/api/verifyDonation/route": "app/api/verifyDonation/route.js",
+  "/api/verifiedFundraiser/route": "app/api/verifiedFundraiser/route.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/donate/[id]/page": "app/donate/[id]/page.js",
   "/how-it-works/page": "app/how-it-works/page.js",
   "/fundraisers/page": "app/fundraisers/page.js",
-  "/page": "app/page.js",
-  "/signup/page": "app/signup/page.js",
   "/fundraiser/[id]/page": "app/fundraiser/[id]/page.js",
-  "/start-fundraiser/page": "app/start-fundraiser/page.js"
+  "/signup/page": "app/signup/page.js",
+  "/page": "app/page.js",
+  "/start-fundraiser/page": "app/start-fundraiser/page.js",
+  "/donate/[id]/page": "app/donate/[id]/page.js"
 }

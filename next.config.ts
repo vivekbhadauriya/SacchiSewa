@@ -12,6 +12,10 @@ module.exports = {
     // Completely ignore TypeScript errors during builds
     ignoreBuildErrors: true,
   },
+   // Additional safeguards
+   swcMinify: true, // Use SWC minification for better performance
+   poweredByHeader: false, // Security enhancement
+   reactStrictMode: false,
   images: {
     minimumCacheTTL: 60,
     domains: ['example.com','res.cloudinary.com'],
