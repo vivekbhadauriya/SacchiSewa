@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Fundraiser } from '../app/fundraisers/page';
+// import Fundraiser from '../app/fundraisers/page';
 
 const slides = [
   {

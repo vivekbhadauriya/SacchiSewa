@@ -110,7 +110,7 @@ try {
   console.log("📌 Bank Details Entries:", bankDetailsEntries);
   
   // Try each entry until we find valid JSON
-  let parsedObj = null;
+  let parsedObj: File | null = null;
   
   for (const entry of bankDetailsEntries) {
     try {
