@@ -1,33 +1,34 @@
 'use client';
 
-import { useState,useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Heart, User, Timer, ChevronLeft, ChevronRight } from 'lucide-react';
-import { fundraisersData , Fundraiser } from '../../data/fundraisersData';
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import Link from 'next/link';
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { fundraisersData, Fundraiser } from '../../data/fundraisersData';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 export default function FundraiserDetailsPage() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
   const router = useRouter();
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const data = await fundraisersData();
-          setFundraisers(data); 
-        } catch (error) {
-          console.error("Error fetching fundraisers:", error);
-        }
-      }
-      fetchData();
-    }, []);
   const { id } = useParams();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await fundraisersData();
+        setFundraisers(data);
+      } catch (error) {
+        console.error('Error fetching fundraisers:', error);
+      }
+    }
+    fetchData();
+  }, []);
+
   const fundraiser = fundraisers.find((f) => f.userID === id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
- 
+
   if (!fundraiser) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -47,21 +48,13 @@ export default function FundraiserDetailsPage() {
 
   const formatNumber = (number: number) =>
     new Intl.NumberFormat('en-US').format(number);
-   
+
   const handleDonate = () => {
-   // alert(`Donate clicked for fundraiser: ${fundraiser.title} (ID: ${fundraiser.userID})`);
-   router.push(`/donate/${fundraiser.fundraiserID}`);
-   console.log(fundraiser.userID);
+    router.push(`/donate/${fundraiser.fundraiserID}`);
   };
 
-  const images = [
-    fundraiser.
-    patientImage,
-    'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
-    'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
-    'https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300',
-    'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&height=200&width=300',
-  ];
+  const images = fundraiser.medicalDocuments?.filter((img) => img) || [];
+
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -70,6 +63,7 @@ export default function FundraiserDetailsPage() {
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
+
   const deadline = fundraiser.deadline
     ? Math.max(0, Math.ceil((new Date(fundraiser.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
@@ -85,13 +79,13 @@ export default function FundraiserDetailsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="relative h-96 rounded-lg overflow-hidden">
-                <Image
-                  src={images[currentImageIndex] || "/placeholder.svg"}
-                  alt={`Image ${currentImageIndex + 1} for ${fundraiser.title}`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg"
-                />
+              <Image
+  src={images[currentImageIndex] || '/placeholder.svg'}
+  alt={`Image ${currentImageIndex + 1} for ${fundraiser.title}`}
+  fill
+  style={{ objectFit: "cover" }}
+  className="rounded-lg"
+/>
                 <div className="absolute inset-0 flex items-center justify-between p-4">
                   <Button variant="outline" size="icon" onClick={prevImage} className="rounded-full bg-white/70 hover:bg-white/90">
                     <ChevronLeft className="h-4 w-4" />
@@ -105,9 +99,7 @@ export default function FundraiserDetailsPage() {
                 {images.map((_, index) => (
                   <button
                     key={index}
-                    className={`w-3 h-3 rounded-full ${
-                      index === currentImageIndex ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
+                    className={`w-3 h-3 rounded-full ${index === currentImageIndex ? 'bg-blue-500' : 'bg-gray-300'}`}
                     onClick={() => setCurrentImageIndex(index)}
                   />
                 ))}
@@ -126,8 +118,7 @@ export default function FundraiserDetailsPage() {
                 <Progress value={percentageRaised} className="h-2" />
                 <div className="flex justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1">
-                    <Timer className="h-4 w-4" /> {deadline
-                    } days left
+                    <Timer className="h-4 w-4" /> {deadline} days left
                   </span>
                   <span className="flex items-center gap-1">
                     <User className="h-4 w-4" /> {fundraiser.donors} donors
@@ -147,18 +138,15 @@ export default function FundraiserDetailsPage() {
           </div>
         </CardContent>
         <CardFooter>
-        <Button
-  onClick={handleDonate}
-  className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
->
-    <Heart className="h-4 w-4" aria-hidden="true" />
-    <span>Donate Now</span>
-
-</Button>
-
+          <Button
+            onClick={handleDonate}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            <Heart className="h-4 w-4" aria-hidden="true" />
+            <span>Donate Now</span>
+          </Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
-

@@ -11,6 +11,8 @@ export interface Fundraiser {
   deadline: Date;
   donors: number;
   document?: string[];
+  medicalDocuments?: string[];
+  summary:string
 }
 // Function to fetch fundraiser data from the API without transforming
 export const fundraisersData = async (): Promise<Fundraiser[]> => {
