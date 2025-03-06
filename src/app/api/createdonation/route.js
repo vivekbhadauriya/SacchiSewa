@@ -2,16 +2,12 @@ import Razorpay from "razorpay";
 import { connectToDB } from "@/utils/database";
 import Donation from "@/models/donations";
 
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-console.log("RAZORPAY_KEY_ID:", process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
-console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
-
-
 export async function POST(req) {
   try {
+    const razorpay = new Razorpay({
+      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
     const body = await req.json(); // Parse JSON in App Router
     const { fundraiserID, amount, name, email, pancardNumber } = body;
 
