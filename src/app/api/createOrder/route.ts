@@ -4,13 +4,18 @@ import Fundraiser from "@/models/fundraiser";
 import Donation from "@/models/donations";
 import { connectToDB } from "@/utils/database"; // Import your DB connection utility
 
-const razorpay = new Razorpay({
-    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
-    key_secret: process.env.RAZORPAY_KEY_SECRET as string,
-});
+// const razorpay = new Razorpay({
+//     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+//     key_secret: process.env.RAZORPAY_KEY_SECRET as string,
+// });
 
-export async function POST(req: Request) {
+export async function POST(req: Request) { 
     try {
+        const razorpay = new Razorpay({
+            key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+            key_secret: process.env.RAZORPAY_KEY_SECRET as string,
+        });
+        
         // Connect to the database first
         await connectToDB();
         console.log("Connected to database");

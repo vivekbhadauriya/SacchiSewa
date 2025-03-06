@@ -14,7 +14,7 @@ module.exports = {
     ignoreBuildErrors: true,
   },
    // Additional safeguards
-   swcMinify: true, // Use SWC minification for better performance
+  // Use SWC minification for better performance
    poweredByHeader: false, // Security enhancement
    reactStrictMode: false,
   images: {
