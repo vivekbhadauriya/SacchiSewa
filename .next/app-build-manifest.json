@@ -1,128 +1,15 @@
 {
   "pages": {
-    "/_not-found/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/_not-found/page-01ede5ce422cb48f.js"
-    ],
-    "/api/createOrder/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/createOrder/route-5ee2e24b0883394c.js"
-    ],
-    "/api/createdonation/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/createdonation/route-6e123063b697a77c.js"
-    ],
-    "/api/login/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/login/route-4a72869b545880b2.js"
-    ],
-    "/api/fundraiser/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/fundraiser/route-bb855d502035ca78.js"
-    ],
-    "/api/verifyDonation/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/verifyDonation/route-898d7be956a86a7c.js"
-    ],
-    "/api/signup/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/signup/route-355a63ed60643e8a.js"
-    ],
-    "/api/verifiedFundraiser/route": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/api/verifiedFundraiser/route-013b348728eb75c5.js"
-    ],
     "/layout": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/css/939b2f4ec1dde109.css",
-      "static/chunks/173-c9f848587a72f41d.js",
-      "static/chunks/app/layout-5afd97a5a6752ba9.js"
-    ],
-    "/fundraiser/[id]/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/501-1e3ea094e7159bbd.js",
-      "static/chunks/911-09646e5e739cb676.js",
-      "static/chunks/app/fundraiser/[id]/page-a8ecad81d75e4ab4.js"
-    ],
-    "/donate/[id]/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/donate/[id]/page-d904f0fce4f4c0f1.js"
-    ],
-    "/signup/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/app/signup/page-f75d5509fa98b06a.js"
-    ],
-    "/how-it-works/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/173-c9f848587a72f41d.js",
-      "static/chunks/app/how-it-works/page-72d3e3c18f27a3c6.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
     "/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/173-c9f848587a72f41d.js",
-      "static/chunks/501-1e3ea094e7159bbd.js",
-      "static/chunks/911-09646e5e739cb676.js",
-      "static/chunks/801-31a2313f738ee422.js",
-      "static/chunks/app/page-41115ea901af67d3.js"
-    ],
-    "/fundraisers/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/173-c9f848587a72f41d.js",
-      "static/chunks/app/fundraisers/page-b4bb40993f2839bf.js"
-    ],
-    "/start-fundraiser/page": [
-      "static/chunks/webpack-9bdf730acd2d0c6f.js",
-      "static/chunks/4bd1b696-98abb4385e759545.js",
-      "static/chunks/517-0e8ca4339a92e9a4.js",
-      "static/chunks/main-app-41ab72587ce0993d.js",
-      "static/chunks/501-1e3ea094e7159bbd.js",
-      "static/chunks/389-cd7b94757d60981e.js",
-      "static/chunks/app/start-fundraiser/page-15c825b00115f353.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
     ]
   }
 }

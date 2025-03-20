@@ -17,7 +17,7 @@ export function Footer() {
               <Link href="https://facebook.com/sacchisewa" target="_blank" rel="noopener noreferrer">
                 <Facebook className="h-6 w-6 text-gray-600 hover:text-blue-600 transition-colors" />
               </Link>
-              <Link href="https://instagram.com/sacchisewa" target="_blank" rel="noopener noreferrer">
+              <Link href="https://www.instagram.com/sacchi_sewa_/?hl=en" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-6 w-6 text-gray-600 hover:text-pink-600 transition-colors" />
               </Link>
               <Link href="https://twitter.com/sacchisewa" target="_blank" rel="noopener noreferrer">
