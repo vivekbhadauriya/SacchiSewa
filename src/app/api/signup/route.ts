@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcryptjs'
 import { connectToDB } from '@/utils/database'
 import User from '@/models/user'
@@ -10,7 +9,6 @@ interface UserData {
   email: string
   password: string
   name: string
- 
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret'
@@ -29,6 +27,14 @@ export async function POST(req: Request) {
       )
     }
 
+    // Validate password strength
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters long' },
+        { status: 400 }
+      )
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const existingUser = await User.findOne({ email })
@@ -41,7 +47,6 @@ export async function POST(req: Request) {
 
     const newUser = new User({
       userID: uuidv4(),
-    
       email,
       name,
       password: hashedPassword,
@@ -68,6 +73,7 @@ export async function POST(req: Request) {
       maxAge: 24 * 60 * 60,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     })
 
     return response

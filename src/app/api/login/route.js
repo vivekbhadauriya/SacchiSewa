@@ -6,8 +6,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
+    // Connect to the database
     await connectToDB();
 
+    // Parse the request body
     const body = await req.json();
     const { email, password } = body;
 
@@ -60,6 +62,7 @@ export async function POST(req) {
 
     return response;
   } catch (error) {
+    console.error('Error in /api/login:', error.message);
     return NextResponse.json(
       {
         error: 'Internal Server Error',

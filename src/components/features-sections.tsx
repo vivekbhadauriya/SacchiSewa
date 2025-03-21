@@ -18,15 +18,16 @@ const colorMap = {
 
 export function FeaturesSection() {
   return (
-    <section className="py-12 sm:py-16 bg-gradient-to-r from-blue-100 to-green-200">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+    <section className="pt-16 sm:pt-20 pb-10 sm:pb-14 bg-gradient-to-r from-blue-100 to-green-200">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white border border-gray-300 rounded-3xl shadow-2xl overflow-hidden">
-          <div className="p-6 sm:p-12 bg-gradient-to-r from-white to-green-100">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
+          <div className="p-6 sm:p-10 md:p-12 bg-gradient-to-r from-white to-green-100">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
               Transforming Lives Together
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 items-start">
+              {/* Features Section */}
               <div className="space-y-6 sm:space-y-8">
                 <FeatureItem
                   icon={Heart}
@@ -48,26 +49,31 @@ export function FeaturesSection() {
                 />
               </div>
 
+              {/* Founder Section */}
               <div>
-                <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-3xl shadow-lg border border-gray-400">
+                <div className="relative w-full h-0 pb-[75%] sm:pb-[56.25%] overflow-hidden rounded-3xl shadow-lg border border-gray-400">
                   <Image
                     src="/image/founder.jpg"
                     alt="Founder"
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-500 hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                   <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-8 right-4 sm:right-8 text-white">
-                    <p className="text-xl sm:text-2xl font-bold">Our Founder</p>
-                    <p className="text-sm sm:text-lg opacity-90">
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold">
+                      Our Founder
+                    </p>
+                    <p className="text-xs sm:text-sm md:text-lg opacity-90">
                       A visionary leader dedicated to change
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 sm:mt-6 text-center">
-                  <p className="text-sm sm:text-lg italic font-light text-gray-700">
-                    <span className="font-bold">“Together, we can make a difference. Let's build a better future for everyone.”</span>
+                  <p className="text-sm sm:text-base md:text-lg italic font-light text-gray-700">
+                    <span className="font-bold">
+                      “Together, we can make a difference. Let's build a better
+                      future for everyone.”
+                    </span>
                   </p>
                 </div>
               </div>
@@ -88,10 +94,12 @@ function FeatureItem({ icon: Icon, title, description, color }) {
         <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${text}`} />
       </div>
       <div>
-        <h3 className="font-bold text-xl sm:text-2xl text-gray-900 mb-1 sm:mb-2">
+        <h3 className="font-bold text-lg sm:text-xl md:text-2xl text-gray-900 mb-1 sm:mb-2">
           {title}
         </h3>
-        <p className="text-gray-700 text-base sm:text-lg">{description}</p>
+        <p className="text-gray-700 text-sm sm:text-base md:text-lg">
+          {description}
+        </p>
       </div>
     </div>
   );

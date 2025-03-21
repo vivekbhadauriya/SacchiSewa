@@ -1,58 +1,49 @@
 "use client";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-// hello
-export default function RegisterPage() {
+import { useUser } from "@/context/UserContext";
+
+export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    name: "",
-    password: "",
-  });
+  const { setUser } = useUser();
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sending to backend:", JSON.stringify(formData));
-
+    setError(null); // Clear any previous errors
     try {
       const response = await fetch("/api/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Ensure correct structure
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
-
-      const data = await response.json(); // Parse response
-      console.log("Response from backend:", data);
-
+      const data = await response.json();
       if (response.ok) {
-        router.push("/start-fundraiser");
+        // Update the user context with the user's name and email
+        setUser({ name: data.user.name, email: data.user.email });
+        router.push("/"); // Redirect to the home page
       } else {
-        console.error("Signup failed:", data.error);
+        setError(data.error || "Signup failed. Please try again.");
       }
     } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
       console.error("Error submitting form:", error);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-green-200">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-full max-w-sm"
-      >
-        <h1 className="text-xl font-bold mb-4 text-center">Register</h1>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center mb-6">Sign Up</h1>
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
           </label>
           <input
@@ -61,13 +52,12 @@ export default function RegisterPage() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter your name"
             required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
@@ -76,13 +66,12 @@ export default function RegisterPage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter your email"
             required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
           </label>
           <input
@@ -91,21 +80,17 @@ export default function RegisterPage() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter your password"
             required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
         >
-          Register
+          Sign Up
         </button>
       </form>
     </div>
   );
 }
-
-
-

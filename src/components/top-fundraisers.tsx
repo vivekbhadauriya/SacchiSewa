@@ -150,30 +150,29 @@ export default function TopFundraisers() {
 
   return (
     <section className="bg-gradient-to-r from-blue-100 to-green-200 py-12">
-  <div className="container mx-auto px-4 md:px-8 lg:px-16">
-    <h2 className="mb-8 text-center text-4xl font-extrabold">
-      Our Top Fundraisers
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {topFundraisers.map((fundraiser) => (
-        <FundraiserCard
-          key={fundraiser.userID}
-          fundraiser={fundraiser}
-          onDonate={handleDonate}
-        />
-      ))}
-    </div>
-    <div className="mt-12 text-center">
-      <Button
-        asChild
-        variant="outline"
-        className="bg-green-600 hover:bg-green-700 text-white border-transparent shadow-md px-8 py-3"
-      >
-        <Link href="/fundraisers">See More Fundraisers</Link>
-      </Button>
-    </div>
-  </div>
-</section>
-
+      <div className="container mx-auto px-4 md:px-8 lg:px-16">
+        <h2 className="mb-8 text-center text-4xl font-extrabold">
+          Our Top Fundraisers
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {topFundraisers.map((fundraiser) => (
+            <FundraiserCard
+              key={fundraiser.userID}
+              fundraiser={fundraiser}
+              onDonate={handleDonate}
+            />
+          ))}
+        </div>
+        <div className="mt-12 text-center">
+          <Button
+            asChild
+            variant="outline"
+            className="bg-green-600 hover:bg-green-700 text-white border-transparent shadow-md px-8 py-3"
+          >
+            <Link href="/fundraisers">See More Fundraisers</Link>
+          </Button>
+        </div>
+      </div>
+    </section>
   );
 }
