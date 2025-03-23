@@ -109,6 +109,7 @@ export default function TopFundraisers() {
       try {
         setIsLoading(true);
         // Add cache-busting query parameter
+        console.log('inside the fundraisers of top');
         const response = await fetch(`/api/top-fundraisers?t=${Date.now()}`);
         
         if (!response.ok) {

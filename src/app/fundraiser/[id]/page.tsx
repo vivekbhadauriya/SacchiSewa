@@ -63,7 +63,7 @@ export default function FundraiserDetailsPage() {
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
-
+  console.log(fundraiser.summary,"summ")
   const deadline = fundraiser.deadline
     ? Math.max(0, Math.ceil((new Date(fundraiser.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
@@ -126,14 +126,28 @@ export default function FundraiserDetailsPage() {
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">More details</h3>
-                <p className="text-gray-600">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi voluptas quisquam expedita molestias repudiandae amet, doloribus praesentium, commodi odio, officia provident ipsam. Earum a veritatis, dolore cupiditate suscipit velit quasi!
-                </p>
-                <p className="text-gray-600 mt-2">
-                  Dolore velit maxime nobis, id nulla praesentium excepturi sequi veniam harum saepe sit dolorem sed! Alias tempore laboriosam quisquam obcaecati, maxime cumque molestiae illo! Repellendus tempore dolorum numquam veniam sed.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold mb-2">More details</h3>
+             
+  {fundraiser.summary !=="" ? (
+    
+    <p>{fundraiser.summary}</p>
+  ) : (
+    <>
+      
+      <p className="text-gray-600">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi voluptas quisquam expedita molestias
+        repudiandae amet, doloribus praesentium, commodi odio, officia provident ipsam. Earum a veritatis, dolore
+        cupiditate suscipit velit quasi!
+      </p>
+      <p className="text-gray-600 mt-2">
+        Dolore velit maxime nobis, id nulla praesentium excepturi sequi veniam harum saepe sit dolorem sed! Alias
+        tempore laboriosam quisquam obcaecati, maxime cumque molestiae illo! Repellendus tempore dolorum numquam veniam
+        sed.
+      </p>
+    </>
+  )}
+</div>
+
             </div>
           </div>
         </CardContent>
