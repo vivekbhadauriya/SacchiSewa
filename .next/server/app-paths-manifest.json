@@ -1,5 +1,7 @@
 {
+  "/api/verifiedFundraiser/route": "app/api/verifiedFundraiser/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/signup/page": "app/signup/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/fundraisers/page": "app/fundraisers/page.js"
 }

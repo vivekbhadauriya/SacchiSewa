@@ -4,16 +4,18 @@ import { useRouter } from "next/navigation";
 import { Heart, User, Timer } from "lucide-react";
 import Link from "next/link";
 import { fundraisersData, Fundraiser } from "../data/fundraisersData";
+
+// Updated formatNumber function to include ₹ symbol
 const formatNumber = (number: number) =>
-  new Intl.NumberFormat("en-US").format(number);
+  `₹${new Intl.NumberFormat("en-IN").format(number)}`;
 
 export default function FundraiserList() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fundraisersData(); 
-        setFundraisers(data); 
+        const data = await fundraisersData();
+        setFundraisers(data);
       } catch (error) {
         console.error("Error fetching fundraisers:", error);
       }
@@ -22,7 +24,7 @@ export default function FundraiserList() {
   }, []);
 
   const handleDonate = () => {
-   // alert(`Donate clicked for fundraiser ID: ${userID}`);
+    // alert(`Donate clicked for fundraiser ID: ${userID}`);
   };
 
   return (
@@ -37,6 +39,7 @@ export default function FundraiserList() {
     </div>
   );
 }
+
 interface FundraiserCardProps {
   fundraiser: Fundraiser;
   onDonate: (id: string) => void;
@@ -80,11 +83,11 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
           <div className="flex justify-between text-sm text-gray-700">
             <div>
               <p className="text-gray-500">Raised</p>
-              <p className="font-bold">${formatNumber(fundraiser.raisedAmount)}</p>
+              <p className="font-bold">{formatNumber(fundraiser.raisedAmount)}</p>
             </div>
             <div>
               <p className="text-gray-500">Goal</p>
-              <p className="font-bold">${formatNumber(fundraiser.goalAmount)}</p>
+              <p className="font-bold">{formatNumber(fundraiser.goalAmount)}</p>
             </div>
           </div>
 

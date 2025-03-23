@@ -1,77 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Heart ,Timer,User} from "lucide-react";
-export interface Fundraiser {  
+import { Heart, Timer, User } from "lucide-react";
+
+export interface Fundraiser {
   userID: string;
-    title: string;
-    description: string;
-    category: string;
-    imageUrl: string;
-    goalAmount: number;
-    raisedAmount: number;
-    daysLeft: number;
-    donors: number;
-    document?: string[]; 
+  title: string;
+  description?: string;
+  summary?: string;
+  category: string;
+  patientImage: string;
+  goalAmount: number;
+  raisedAmount: number;
+  daysLeft: number;
+  donors: number;
+  fundraiserID?: string;
+  medicalDocuments?: string[];
 }
 
 const formatNumber = (number: number) =>
-  new Intl.NumberFormat("en-US").format(number);
-
-const topFundraisers: Fundraiser[] = [
-  {
-    userID: "1",
-    title: "Kidney Transplant Fund",
-    description:
-      "Support John Doe, a father of two, in his journey to receive a life-saving kidney transplant. Every contribution brings hope.",
-    category: "Health",
-    imageUrl:
-      "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300",
-    goalAmount: 75000,
-    raisedAmount: 25000,
-    daysLeft: 30,
-    donors: 200,
-    document: [
-      "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300",
-      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&height=200&width=300",
-    ],
-  },
-  {
-    userID: "2",
-    title: "Heart Surgery for Jane",
-    description:
-      "Help Jane Smith undergo urgent heart surgery to treat her critical condition. Your donation will save a life.",
-    category: "Health",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&height=200&width=300",
-    goalAmount: 100000,
-    raisedAmount: 45000,
-    daysLeft: 20,
-    donors: 350,
-    document: [
-      "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300",
-      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&height=200&width=300",
-    ],
-  },
-  {
-    userID: "3",
-    title: "Cancer Treatment for Emily",
-    description:
-      "Emily is battling cancer and needs funds for her chemotherapy sessions. Let’s come together to support her fight.",
-    category: "Health",
-    imageUrl:
-      "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300",
-    goalAmount: 60000,
-    raisedAmount: 32000,
-    daysLeft: 15,
-    donors: 180,
-    document: [
-      "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&height=200&width=300",
-      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&height=200&width=300",
-    ],
-  }
-];
+  `₹${new Intl.NumberFormat("en-IN").format(number)}`;
 
 interface FundraiserCardProps {
   fundraiser: Fundraiser;
@@ -79,17 +29,24 @@ interface FundraiserCardProps {
 }
 
 function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
-  const percentageRaised = Math.min(
-    Math.round((fundraiser.raisedAmount / fundraiser.goalAmount) * 100),
-    100
-  );
+  // Ensure raisedAmount is a number - default to 0 if undefined or NaN
+  const raisedAmount = typeof fundraiser.raisedAmount === 'number' ? fundraiser.raisedAmount : 0;
+  
+  // Calculate percentage - handle potential division by zero
+  const percentageRaised = fundraiser.goalAmount > 0 
+    ? Math.min(Math.round((raisedAmount / fundraiser.goalAmount) * 100), 100)
+    : 0;
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 m-2 p-4 w-[360px]">
       <img
-        src={fundraiser.imageUrl}
+        src={fundraiser.patientImage}
         alt={`Image for ${fundraiser.title}`}
         className="w-full h-48 object-cover rounded-md"
+        onError={(e) => {
+          // Fallback if image fails to load
+          e.currentTarget.src = "/placeholder-fundraiser.jpg";
+        }}
       />
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900">
@@ -98,7 +55,7 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
           </Link>
         </h3>
         <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-          {fundraiser.description}
+          {fundraiser.description || fundraiser.summary || "Help support this cause"}
         </p>
         <div className="mt-4 space-y-3">
           <div className="relative w-full bg-gray-200 h-2 rounded-full">
@@ -110,11 +67,11 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
           <div className="flex justify-between text-sm text-gray-700">
             <div>
               <p className="text-gray-500">Raised</p>
-              <p className="font-bold">${formatNumber(fundraiser.raisedAmount)}</p>
+              <p className="font-bold">{formatNumber(raisedAmount)}</p>
             </div>
             <div>
               <p className="text-gray-500">Goal</p>
-              <p className="font-bold">${formatNumber(fundraiser.goalAmount)}</p>
+              <p className="font-bold">{formatNumber(fundraiser.goalAmount)}</p>
             </div>
           </div>
 
@@ -123,7 +80,7 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
               <Timer size={16} /> {fundraiser.daysLeft} days left
             </span>
             <span className="flex items-center gap-1">
-              {fundraiser.donors} donors <User size={16} />
+              {fundraiser.donors > 0 ? fundraiser.donors : 0} donors <User size={16} />
             </span>
           </div>
           <button
@@ -133,8 +90,8 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
           >
             <Heart size={18} />
             <Link href={`/donate/${fundraiser.userID}`} className="hover:underline">
-            Donate Now
-          </Link>
+              Donate Now
+            </Link>
           </button>
         </div>
       </div>
@@ -142,10 +99,46 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
   );
 }
 
-
 export default function TopFundraisers() {
+  const [topFundraisers, setTopFundraisers] = useState<Fundraiser[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTopFundraisers = async () => {
+      try {
+        setIsLoading(true);
+        // Add cache-busting query parameter
+        const response = await fetch(`/api/top-fundraisers?t=${Date.now()}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Top fundraisers data:", data);
+        
+        // Ensure data is valid and has the expected structure
+        if (Array.isArray(data)) {
+          setTopFundraisers(data);
+        } else {
+          console.error("Invalid data format received:", data);
+          setError("Invalid data format received from server");
+        }
+      } catch (error) {
+        console.error("Error fetching top fundraisers:", error);
+        setError("Failed to load top fundraisers");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTopFundraisers();
+  }, []);
+
   const handleDonate = (userID: string) => {
-    alert(`Donate clicked for fundraiser ID: ${userID}`);
+    // Navigate to the donate page
+    window.location.href = `/donate/${userID}`;
   };
 
   return (
@@ -154,15 +147,37 @@ export default function TopFundraisers() {
         <h2 className="mb-8 text-center text-4xl font-extrabold">
           Our Top Fundraisers
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {topFundraisers.map((fundraiser) => (
-            <FundraiserCard
-              key={fundraiser.userID}
-              fundraiser={fundraiser}
-              onDonate={handleDonate}
-            />
-          ))}
-        </div>
+        
+        {isLoading && (
+          <div className="text-center py-8">
+            <p>Loading top fundraisers...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="text-center py-8 text-red-500">
+            <p>{error}</p>
+          </div>
+        )}
+        
+        {!isLoading && !error && topFundraisers.length === 0 && (
+          <div className="text-center py-8">
+            <p>No fundraisers available at the moment.</p>
+          </div>
+        )}
+        
+        {!isLoading && topFundraisers.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {topFundraisers.map((fundraiser) => (
+              <FundraiserCard
+                key={fundraiser.userID}
+                fundraiser={fundraiser}
+                onDonate={handleDonate}
+              />
+            ))}
+          </div>
+        )}
+        
         <div className="mt-12 text-center">
           <Button
             asChild
