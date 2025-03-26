@@ -25,8 +25,6 @@ export async function POST(req) {
       console.error("❌ Signature verification failed");
       return new Response(JSON.stringify({ success: false, message: "Payment verification failed" }), { status: 400 });
     }
-    
-
 
     // ✅ Fetch Donation
     const donation = await Donation.findOne({ donationID: razorpay_order_id });
@@ -40,58 +38,55 @@ export async function POST(req) {
     donation.razorpay_payment_id = razorpay_payment_id;
     donation.donationTimestamp = new Date();
     await donation.save();
+
+    // ✅ Fetch Fundraiser
     const fundraiser = await mongoose.connection.db
-  .collection('verifiedCamp')
-  .findOne({ fundraiserID: donation.fundraiserID });
+      .collection('verifiedCamp')
+      .findOne({ fundraiserID: donation.fundraiserID });
 
 console.log("🔍 Found fundraiser (raw query):", fundraiser);
 console.log("🔍 Type of fundraiserID:", typeof donation.fundraiserID, donation.fundraiserID);
 
-const fundraiserID = String(donation.fundraiserID).trim();
 
 console.log("🔍 Found fundraiser:", fundraiser);
 
 // ✅ Update Fundraiser Raised Amount
-if (!fundraiser) {
-  console.error("⚠️ Fundraiser not found for ID:", donation.fundraiserID);
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "Payment verified but fundraiser not found",
-      donation: donation.toObject(),
-    }),
-    { status: 200 }
-  );
-}
+    if (!fundraiser) {
+      console.error("⚠️ Fundraiser not found for ID:", donation.fundraiserID);
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Payment verified but fundraiser not found",
+          donation: donation.toObject(),
+        }),
+        { status: 200 }
+      );
+    }
 
-// 🔄 Update raisedAmount in the database
-const updatedFundraiser = await mongoose.connection.db
-  .collection('verifiedCamp')
-  .updateOne(
-    { fundraiserID: fundraiserID }, 
-    { $inc: { raisedAmount: donation.amount } } // Increment raisedAmount
-  );
+    // 🔄 Update raisedAmount and donors in the database
+    const fundraiserID = String(donation.fundraiserID).trim();
+    const updatedFundraiser = await mongoose.connection.db
+      .collection('verifiedCamp')
+      .updateOne(
+        { fundraiserID: fundraiserID }, 
+        { 
+          $inc: { 
+            raisedAmount: donation.amount, // Increment raisedAmount
+            donors: 1 // Increment donors count
+          } 
+        }
+      );
 
-console.log("✅ Fundraiser updated successfully:", updatedFundraiser);
+    console.log("✅ Fundraiser updated successfully:", updatedFundraiser);
 
-return new Response(
-  JSON.stringify({
-    success: true,
-    message: "Payment verified and fundraiser updated",
-    updatedFundraiser,
-  }),
-  { status: 200 }
-);
-
-
-    console.log(`✅ Fundraiser updated: ${fundraiser.title} | Raised: ₹${fundraiser.raisedAmount}`);
-
-    return new Response(JSON.stringify({
-      success: true,
-      message: "Payment verified and fundraiser updated successfully",
-      donation: donation.toObject(),
-      fundraiser: { id: fundraiser._id.toString(), raisedAmount: fundraiser.raisedAmount }
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Payment verified and fundraiser updated",
+        updatedFundraiser,
+      }),
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error("❌ Error in verification process:", error);

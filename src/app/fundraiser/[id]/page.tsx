@@ -47,7 +47,7 @@ export default function FundraiserDetailsPage() {
   );
 
   const formatNumber = (number: number) =>
-    new Intl.NumberFormat('en-US').format(number);
+    `₹${new Intl.NumberFormat("en-IN").format(number)}`;
 
   const handleDonate = () => {
     router.push(`/donate/${fundraiser.fundraiserID}`);
@@ -110,56 +110,62 @@ export default function FundraiserDetailsPage() {
                 <h2 className="text-2xl font-semibold mb-2">About this fundraiser</h2>
                 <p className="text-gray-600">{fundraiser.description}</p>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">Raised: ${formatNumber(fundraiser.raisedAmount)}</span>
-                  <span className="font-medium">Goal: ${formatNumber(fundraiser.goalAmount)}</span>
-                </div>
-                <Progress value={percentageRaised} className="h-2" />
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Timer className="h-4 w-4" /> {deadline} days left
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <User className="h-4 w-4" /> {fundraiser.donors} donors
-                  </span>
-                </div>
-              </div>
-              <div>
+              <div className="mt-4 space-y-3">
+                        <div className="relative w-full bg-gray-200 h-2 rounded-full">
+                          <div
+                            className="absolute top-0 left-0 bg-green-500 h-2 rounded-full"
+                            style={{ width: `${percentageRaised}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-700">
+                          <div>
+                            <p className="text-gray-500">Raised</p>
+                            <p className="font-bold">{formatNumber(fundraiser.raisedAmount)}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Goal</p>
+                            <p className="font-bold">{formatNumber(fundraiser.goalAmount)}</p>
+                          </div>
+                        </div>
+              
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Timer size={16} /> {deadline} days left
+                          </span>
+                          <span className="flex items-center gap-1">
+                            {fundraiser.donors} donors <User size={16} />
+                          </span>
+                        </div>
+                        <div>
               <h3 className="text-xl font-semibold mb-2">More details</h3>
              
-  {fundraiser.summary !=="" ? (
+                  {fundraiser.summary !=="" ? (
     
-    <p>{fundraiser.summary}</p>
-  ) : (
-    <>
-      
-      <p className="text-gray-600">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi voluptas quisquam expedita molestias
-        repudiandae amet, doloribus praesentium, commodi odio, officia provident ipsam. Earum a veritatis, dolore
-        cupiditate suscipit velit quasi!
-      </p>
-      <p className="text-gray-600 mt-2">
-        Dolore velit maxime nobis, id nulla praesentium excepturi sequi veniam harum saepe sit dolorem sed! Alias
-        tempore laboriosam quisquam obcaecati, maxime cumque molestiae illo! Repellendus tempore dolorum numquam veniam
-        sed.
-      </p>
-    </>
-  )}
-</div>
+                         <p>{fundraiser.summary}</p>
+                             ) : (
+                              <>
+     
+                                 </>
+                             )}
+                           </div>
+
+                        
+                        <button
+                          onClick={handleDonate}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors"
+                          aria-label={`Donate to ${fundraiser.title}`}
+                        >
+                          <Heart size={18} />
+                          Donate Now
+                        </button>
+                      </div>
+ 
+                   </div>
 
             </div>
-          </div>
+          
         </CardContent>
-        <CardFooter>
-          <Button
-            onClick={handleDonate}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          >
-            <Heart className="h-4 w-4" aria-hidden="true" />
-            <span>Donate Now</span>
-          </Button>
-        </CardFooter>
+        
       </Card>
     </div>
   );

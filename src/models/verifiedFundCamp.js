@@ -9,6 +9,7 @@ const verifiedCampSchema = new mongoose.Schema({
     goalAmount: { type: Number, required: true },
     mobileNumber: { type: Number, required: true },
     raisedAmount: { type: Number, default: 0, min: 0 }, // ✅ Ensures raisedAmount doesn't go negative
+    donors: { type: Number, default: 0 }, // New field for number of donors
     patientImage: { type: String, required: true },
     patientName: { type: String, required: true },
     medicalDocuments: [{ type: String, required: true }], 
