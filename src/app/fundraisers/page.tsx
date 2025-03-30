@@ -28,7 +28,7 @@ export default function FundraiserList() {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-8 py-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8">
       {fundraisers.map((fundraiser) => (
         <FundraiserCard
           key={fundraiser.userID}
