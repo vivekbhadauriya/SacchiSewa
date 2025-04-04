@@ -7,12 +7,15 @@ import { Heart, User, Timer, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fundraisersData, Fundraiser } from '../../data/fundraisersData';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function FundraiserDetailsPage() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
   const router = useRouter();
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const refresh = searchParams.get('refresh');
 
   useEffect(() => {
     async function fetchData() {
@@ -24,7 +27,7 @@ export default function FundraiserDetailsPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const fundraiser = fundraisers.find((f) => f.userID === id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -133,8 +136,8 @@ export default function FundraiserDetailsPage() {
                             <Timer size={16} /> {deadline} days left
                           </span>
                           <span className="flex items-center gap-1">
-                            {fundraiser.donors} donors <User size={16} />
-                          </span>
+                              {fundraiser.donors > 0 ? fundraiser.donors : 0} donors <User size={16} />
+                            </span>
                         </div>
                         <div>
               <h3 className="text-xl font-semibold mb-2">More details</h3>

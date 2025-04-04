@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, User, Timer } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { fundraisersData, Fundraiser } from "../data/fundraisersData";
 
 // Updated formatNumber function to include ₹ symbol
@@ -11,6 +12,8 @@ const formatNumber = (number: number) =>
 
 export default function FundraiserList() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
+  const searchParams = useSearchParams(); 
+  const refresh = searchParams.get('refresh');
   useEffect(() => {
     async function fetchData() {
       try {
@@ -21,14 +24,14 @@ export default function FundraiserList() {
       }
     }
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const handleDonate = () => {
     // alert(`Donate clicked for fundraiser ID: ${userID}`);
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-8 py-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8">
       {fundraisers.map((fundraiser) => (
         <FundraiserCard
           key={fundraiser.userID}
@@ -96,7 +99,7 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
               <Timer size={16} /> {deadline} days left
             </span>
             <span className="flex items-center gap-1">
-              {fundraiser.donors} donors <User size={16} />
+              {fundraiser.donors > 0 ? fundraiser.donors : 0} donors <User size={16} />
             </span>
           </div>
 

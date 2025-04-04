@@ -1,5 +1,5 @@
 "use client";
-
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,7 @@ interface FundraiserCardProps {
 }
 
 function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
-  // Ensure raisedAmount is a number - default to 0 if undefined or NaN
   const raisedAmount = typeof fundraiser.raisedAmount === 'number' ? fundraiser.raisedAmount : 0;
-  
-  // Calculate percentage - handle potential division by zero
   const percentageRaised = fundraiser.goalAmount > 0 
     ? Math.min(Math.round((raisedAmount / fundraiser.goalAmount) * 100), 100)
     : 0;
@@ -44,13 +41,12 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
         alt={`Image for ${fundraiser.title}`}
         className="w-full h-48 object-cover rounded-md"
         onError={(e) => {
-          // Fallback if image fails to load
           e.currentTarget.src = "/placeholder-fundraiser.jpg";
         }}
       />
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900">
-          <Link href={`/fundraiser/${fundraiser.userID}`} className="hover:underline">
+          <Link href={`/fundraiser/${fundraiser.fundraiserID}`} className="hover:underline">
             {fundraiser.title}
           </Link>
         </h3>
@@ -84,14 +80,12 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
             </span>
           </div>
           <button
-            onClick={() => onDonate(fundraiser.userID)}
+            onClick={() => onDonate(fundraiser.fundraiserID!)} // Use fundraiserID here
             className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors"
             aria-label={`Donate to ${fundraiser.title}`}
           >
             <Heart size={18} />
-            <Link href={`/donate/${fundraiser.userID}`} className="hover:underline">
-              Donate Now
-            </Link>
+            Donate Now
           </button>
         </div>
       </div>
@@ -103,6 +97,8 @@ export default function TopFundraisers() {
   const [topFundraisers, setTopFundraisers] = useState<Fundraiser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams(); // Add this
+  const refresh = searchParams.get('refresh');
 
   useEffect(() => {
     const fetchTopFundraisers = async () => {
@@ -135,11 +131,11 @@ export default function TopFundraisers() {
     };
 
     fetchTopFundraisers();
-  }, []);
+  }, [refresh]);
 
-  const handleDonate = (userID: string) => {
-    // Navigate to the donate page
-    window.location.href = `/donate/${userID}`;
+  const handleDonate = (fundraiserID: string) => {
+    // Navigate to the donate page using fundraiserID
+    window.location.href = `/donate/${fundraiserID}`;
   };
 
   return (
