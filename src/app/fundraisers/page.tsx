@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, User, Timer } from "lucide-react";
 import Link from "next/link";
@@ -10,10 +10,23 @@ import { fundraisersData, Fundraiser } from "../data/fundraisersData";
 const formatNumber = (number: number) =>
   `₹${new Intl.NumberFormat("en-IN").format(number)}`;
 
+// Main component that will be imported
 export default function FundraiserList() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">Loading fundraisers...</div>}>
+      <FundraiserListContent />
+    </Suspense>
+  );
+}
+
+// Component that uses useSearchParams
+function FundraiserListContent() {
   const [fundraisers, setFundraisers] = useState<Fundraiser[]>([]);
-  const searchParams = useSearchParams(); 
+  // Move useSearchParams inside the component wrapped by Suspense
+  const { useSearchParams } = require("next/navigation");
+  const searchParams = useSearchParams();
   const refresh = searchParams.get('refresh');
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -26,17 +39,12 @@ export default function FundraiserList() {
     fetchData();
   }, [refresh]);
 
-  const handleDonate = () => {
-    // alert(`Donate clicked for fundraiser ID: ${userID}`);
-  };
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8">
       {fundraisers.map((fundraiser) => (
         <FundraiserCard
           key={fundraiser.userID}
           fundraiser={fundraiser}
-          onDonate={handleDonate}
         />
       ))}
     </div>
@@ -45,10 +53,9 @@ export default function FundraiserList() {
 
 interface FundraiserCardProps {
   fundraiser: Fundraiser;
-  onDonate: (id: string) => void;
 }
 
-function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
+function FundraiserCard({ fundraiser }: FundraiserCardProps) {
   const percentageRaised = Math.min(
     Math.round((fundraiser.raisedAmount / fundraiser.goalAmount) * 100),
     100

@@ -4,6 +4,7 @@ import { WhyChooseUs } from "../components/why-choose-us";
 import TopFundraisers from "../components/top-fundraisers";
 import { SuccessStories } from "../components/success-stories";
 import { FaWhatsapp } from "react-icons/fa";
+import { Suspense } from 'react';
 
 export default function Home() {
   return (
@@ -11,7 +12,9 @@ export default function Home() {
       <HeroSection />
       <FeaturesSection />
       <WhyChooseUs />
-      <TopFundraisers />
+      <Suspense fallback={<div className="text-center py-12">Loading top fundraisers...</div>}>
+        <TopFundraisers />
+      </Suspense>
       <SuccessStories />
       <a
         href="https://wa.me/9311536630"

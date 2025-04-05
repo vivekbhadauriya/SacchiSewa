@@ -1,7 +1,8 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Heart, Timer, User } from "lucide-react";
 
@@ -93,11 +94,23 @@ function FundraiserCard({ fundraiser, onDonate }: FundraiserCardProps) {
   );
 }
 
+// Main component that will be imported
 export default function TopFundraisers() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">Loading top fundraisers...</div>}>
+      <TopFundraisersContent />
+    </Suspense>
+  );
+}
+
+// Content component that uses useSearchParams
+function TopFundraisersContent() {
   const [topFundraisers, setTopFundraisers] = useState<Fundraiser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams(); // Add this
+  
+  // Use the useSearchParams hook inside the Suspense boundary
+  const searchParams = useSearchParams();
   const refresh = searchParams.get('refresh');
 
   useEffect(() => {
